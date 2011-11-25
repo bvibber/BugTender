@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>BugTender</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1"> 
         <link rel="stylesheet" type="text/css" href="lib/jquery.mobile-1.0.css">
         <link rel="stylesheet" type="text/css" href="style/main.css">
 
@@ -12,16 +13,45 @@
         <script src="app.js"></script>
     </head>
     <body>
-        <div id="index"></div>
-        <div id="main">
-            <div id="top">
-                top bar
+        <div id="index" data-role="page">
+            <div data-role="header">
+                <h1>BugTender</h1>
             </div>
-            <div id="view">
+            <a href="#buglist">Bug list</a>
+            <div data-role="footer">
+                <h4>bottom bar</h4>
+            </div>
+        </div>
+
+        <div id="buglist" data-role="page">
+            <div data-role="header">
+                <a href="#index">Home</a>
+                <h1>Bug list</h1>
+            </div>
+            <a href="#auth-dialog" data-rel="dialog">Open dialog</a> 
+            <div id="view" data-role="content">
                 ...
             </div>
-            <div id="bottom">
-                bottom bar
+            <div data-role="footer" >
+                <h4>bottom bar</h4>
+            </div>
+        </div>
+
+        <div id="auth-dialog" data-role="dialog">
+            <div data-role="header">
+                <h1>Authenticate</h1>
+            </div>
+            <div data-role="content">
+                <p>
+                    <input type="email" placeholder="Bugzilla email">
+                </p>
+                <p>
+                    <input type="password" placeholder="Password">
+                </p>
+                <div>
+                    <a href="#" data-role="button" data-theme="b" class="auth">Ok</a>
+                    <a href="#" data-role="button" data-rel="back">Cancel</a>
+                </div>
             </div>
         </div>
     </body>

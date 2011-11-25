@@ -61,6 +61,7 @@ $(function() {
         
         $a.click(function(event) {
             event.preventDefault;
+            /*
             var user = prompt('Username?'),
                 pass = prompt('Password?');
             bz.call('Bug.add_comment', {
@@ -70,6 +71,10 @@ $(function() {
                 Bugzilla_password: pass
             }).then(function(result) {
                 $('#view').empty().text(JSON.stringify(result));
+            });
+            */
+            $.mobile.changePage('#auth-dialog', {
+                role: 'dialog'
             });
         });
         return $li;
