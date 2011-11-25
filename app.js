@@ -43,25 +43,24 @@ $(function() {
      * @param {Array of Bug objects} bugs
      */
     function showBugs(bugs) {
-        var $table = $('<table class="buglist"><thead></tead><tbody></tbody></table>'),
-            $thead = $table.find('thead'),
-            $tbody = $table.find('tbody');
+        var $list = $('<ul></ul>');
 
-        $('#view').empty().append($table);
+        $('#view').empty().append($list);
         
         $.each(bugs, function(i, bug) {
-            buildBugRow(bug).appendTo($tbody);
+            buildBugRow(bug).appendTo($list);
         });
+        
+        $list.listview();
     }
 
     function buildBugRow(bug) {
-        var $tr = $('<tr>'),
-            $button = $('<button>').text('Test comment');
-        $('<td>').text(bug.id).appendTo($tr);
-        $('<td>').text(bug.summary).appendTo($tr);
-        $('<td>').append($button).appendTo($tr);
+        var $li = $('<li>'),
+            $a = $('<a>').appendTo($li);
+        $a.text(bug.id + ' ' + bug.summary);
         
-        $button.click(function() {
+        $a.click(function(event) {
+            event.preventDefault;
             var user = prompt('Username?'),
                 pass = prompt('Password?');
             bz.call('Bug.add_comment', {
@@ -73,7 +72,7 @@ $(function() {
                 $('#view').empty().text(JSON.stringify(result));
             });
         });
-        return $tr;
+        return $li;
     }
 
     var bz = new Bugzilla(BugTender_target);
