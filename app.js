@@ -9,7 +9,7 @@ $(function() {
         var service = new rpc.ServiceProxy(url + '/jsonrpc.cgi', {
             asynchronous: true,
             sanitize: false, // jsonp
-            methods: ['Bug.search', 'Bug.get'],
+            methods: ['Bug.search', 'Bug.get', 'Bug.add_comment'],
             callbackParamName: 'callback'
         });
 
@@ -40,8 +40,44 @@ $(function() {
 
         this.Bug = {
             search: makeProxy('Bug.search', service.Bug.search),
-            get: makeProxy('Bug.get', service.Bug.get)
+            get: makeProxy('Bug.get', service.Bug.get),
+            add_comment: makeProxy('Bug.add_comment', service.Bug.add_comment)
         }
+    }
+
+    /**
+     * @param {Array of Bug objects} bugs
+     */
+    function showBugs(bugs) {
+        var $table = $('<table class="buglist"><thead></tead><tbody></tbody></table>'),
+            $thead = $table.find('thead'),
+            $tbody = $table.find('tbody');
+
+        $('#view').empty().append($table);
+        
+        $.each(bugs, function(i, bug) {
+            buildBugRow(bug).appendTo($tbody);
+        });
+    }
+
+    function buildBugRow(bug) {
+        var $tr = $('<tr>'),
+            $button = $('<button>').text('Test comment');
+        $('<td>').text(bug.id).appendTo($tr);
+        $('<td>').text(bug.summary).appendTo($tr);
+        $('<td>').append($button).appendTo($tr);
+        
+        $button.click(function() {
+            var user = prompt('Username?'),
+                pass = prompt('Password?');
+            bz.Bug.add_comment({
+                id: bug.id,
+                comment: 'Just testing Bugzilla tools',
+                Bugzilla_login: user,
+                Bugzilla_password: pass
+            });
+        });
+        return $tr;
     }
 
     var bz = new Bugzilla('https://bugzilla.wikimedia.org');
@@ -51,7 +87,8 @@ $(function() {
     //bz.Bug.get({
     //    ids: [1234]
     }).then(function(result) {
-        $('#view').text(JSON.stringify(result));
+        //$('#view').text(JSON.stringify(result));
+        showBugs(result.bugs);
     });
 
 });
