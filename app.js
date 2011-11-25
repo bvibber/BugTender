@@ -39,6 +39,40 @@ $(function() {
         };
     }
 
+    var app = {
+        /**
+         * Prompt for authentication (if necessary) then pass credentials on.
+         *
+         * @return promise
+         */
+        authenticate: function() {
+            return $.Deferred(function(deferred) {
+                var $dialog = $('#auth-dialog');
+                $dialog.bind('pagehide', function() {
+                    $dialog.unbind('pagehide');
+                    $login.unbind('click');
+                    if (!deferred.isResolved()) {
+                        deferred.reject();
+                    }
+                });
+
+                var $login = $dialog.find('a.login');
+                $login.click(function(event) {
+                    console.log('clicked login');
+                    var auth = {
+                        user: $dialog.find('input[type=email]').val(),
+                        pass: $dialog.find('input[type=password]').val()
+                    };
+                    deferred.resolve(auth);
+                });
+
+                $.mobile.changePage('#auth-dialog', {
+                    role: 'dialog'
+                });
+            }).promise();
+        }
+    };
+
     /**
      * @param {Array of Bug objects} bugs
      */
@@ -62,17 +96,21 @@ $(function() {
             /*
             var user = prompt('Username?'),
                 pass = prompt('Password?');
-            bz.call('Bug.add_comment', {
-                id: bug.id,
-                comment: 'Just testing Bugzilla tools',
-                Bugzilla_login: user,
-                Bugzilla_password: pass
-            }).then(function(result) {
-                $('#view').empty().text(JSON.stringify(result));
-            });
             */
-            $.mobile.changePage('#auth-dialog', {
-                role: 'dialog'
+            app.authenticate().then(function(auth) {
+                bz.call('Bug.add_comment', {
+                    id: bug.id,
+                    comment: 'Just testing Bugzilla tools (not the spammer)',
+                    Bugzilla_login: auth.user,
+                    Bugzilla_password: auth.pass
+                }).then(function(result) {
+                    console.log('auth done');
+                    $('#view').empty().text(JSON.stringify(result));
+                }).fail(function() {
+                    console.log('hit failed');
+                });
+            }).fail(function() {
+                console.log('auth canceled');
             });
         });
         return $li;
