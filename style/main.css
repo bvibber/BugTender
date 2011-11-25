@@ -1,0 +1,68 @@
+html {
+    overflow: hidden;
+}
+
+#index,
+#main {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+}
+
+#index {
+    left: 0;
+    width: 320px;
+
+    background: #eee;
+
+    overflow: auto;
+}
+
+#main {
+    left: 320px;
+    right: 0;
+
+    overflow: hidden;
+}
+
+/* Within the #main area ... */
+
+#top,
+#bottom,
+#view {
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
+#top,
+#bottom {
+    height: 48px;
+
+    background: blue;
+    background-image: -moz-linear-gradient(top, #44aaff 0%, #2288dd 100%);
+    background-image: -webkit-linear-gradient(top, #44aaff 0%, #2288dd 100%);
+
+    overflow: hidden;
+}
+
+#top {
+    top: 0;
+}
+
+#bottom {
+    bottom: 0;
+}
+
+#view {
+    top: 48px;
+    bottom: 48px;
+    
+    padding: 16px;
+
+    background: white;
+    box-shadow: 0px 3px 7px #BBBBBB inset;
+    -webkit-box-shadow: 0px 3px 7px #BBBBBB inset;
+
+    overflow: auto;
+}
