@@ -94,16 +94,29 @@ $(function() {
 
         showBugView: function(id) {
             return $.Deferred(function(deferred) {
-                var $dialog = $('#bugview');
+                var $view = $('#bugview');
 
                 $.mobile.changePage('#bugview');
                 
-                $dialog.find('h1').text('Bug $1'.replace('$1', id + ''));
+                $view.find('h1').text('Bug $1'.replace('$1', id + ''));
 
                 bz.call('Bug.get', {
                     ids: [id]
                 }).then(function(result) {
-                    $('#bugview .view').text(JSON.stringify(result));
+                    var bug = result.bugs[0];
+                    $view
+                        .find('.summary')
+                            .text(bug.summary)
+                            .end()
+                        .find('.assigned')
+                            .text(bug.assigned_to)
+                            .end()
+                        .find('.status')
+                            .text(bug.status)
+                            .end()
+                        .find('.raw')
+                            .text(JSON.stringify(bug))
+                            .end();
                 });
             }).promise();
         }
