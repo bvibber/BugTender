@@ -1,0 +1,7 @@
+// To use a bugzilla instance directly
+// Requires being on same domain, having elevated privs, or CORS config.
+var BugTender_target = 'https://bugzilla.wikimedia.org';
+
+// To use a local PHP proxy to the remote Bugzilla instance.
+// Set actual target in config.php
+var BugTender_target = 'proxy.php';

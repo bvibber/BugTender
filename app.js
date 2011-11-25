@@ -6,21 +6,17 @@ $(function() {
      */
     function Bugzilla(url) {
         var that = this;
-        var service = new rpc.ServiceProxy(url + '/jsonrpc.cgi', {
+        var target = url + '/jsonrpc.cgi';
+        var service = new rpc.ServiceProxy(target, {
             asynchronous: true,
-            sanitize: false, // jsonp
-            methods: ['Bug.search', 'Bug.get', 'Bug.add_comment'],
-            callbackParamName: 'callback'
+            sanitize: true,
+            methods: ['Bug.search', 'Bug.get', 'Bug.add_comment']
         });
 
         var proxy = function(method, call, params) {
             return jQuery.Deferred(function(deferred) {
-                var xparams = $.extend({method: method}, params);
                 call({
-                    params: {
-                        method: method,
-                        params: JSON.stringify([params])
-                    },
+                    params: params,
                     onSuccess: function(json) {
                         deferred.resolve(json);
                     },
@@ -80,7 +76,7 @@ $(function() {
         return $tr;
     }
 
-    var bz = new Bugzilla('https://bugzilla.wikimedia.org');
+    var bz = new Bugzilla(BugTender_target);
     window.bz = bz;
     bz.Bug.search({
         summary: "android"

@@ -1,0 +1,4 @@
+<?php
+
+// To enable JSON-RPC POST proxying to a remote Bugzilla instance
+define('BUGTENDER_PROXY', 'https://bugzilla.wikimedia.org/jsonrpc.cgi');
