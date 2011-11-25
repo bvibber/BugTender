@@ -43,15 +43,13 @@ $(function() {
      * @param {Array of Bug objects} bugs
      */
     function showBugs(bugs) {
-        var $list = $('<ul></ul>');
-
-        $('#view').empty().append($list);
+        var $list = $('#view ul');
+        $list.empty();
         
         $.each(bugs, function(i, bug) {
             buildBugRow(bug).appendTo($list);
         });
-        
-        $list.listview();
+        $list.listview('refresh');
     }
 
     function buildBugRow(bug) {
@@ -83,11 +81,15 @@ $(function() {
     var bz = new Bugzilla(BugTender_target);
     window.bz = bz;
     
-    bz.call('Bug.search', {
-        summary: "android"
-    }).then(function(result) {
-        //$('#view').text(JSON.stringify(result));
-        showBugs(result.bugs);
+    // fixme doesn't trigger if we started on this page!?
+    $('#buglist').bind('pageshow', function() {
+        console.log('bug list loaded');
+        bz.call('Bug.search', {
+            summary: "android"
+        }).then(function(result) {
+            //$('#view').text(JSON.stringify(result));
+            showBugs(result.bugs);
+        });
     });
 
 });
