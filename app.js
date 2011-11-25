@@ -87,32 +87,25 @@ $(function() {
 
         buildBugRow: function(bug) {
             var $li = $('<li>'),
-                $a = $('<a>').appendTo($li);
+                $a = $('<a>').data('bug', bug).appendTo($li);
             $a.text(bug.id + ' ' + bug.summary);
-            
-            $a.click(function(event) {
-                event.preventDefault;
-                /*
-                var user = prompt('Username?'),
-                    pass = prompt('Password?');
-                */
-                app.authenticate().then(function(auth) {
-                    bz.call('Bug.add_comment', {
-                        id: bug.id,
-                        comment: 'Just testing Bugzilla tools (not the spammer)',
-                        Bugzilla_login: auth.user,
-                        Bugzilla_password: auth.pass
-                    }).then(function(result) {
-                        console.log('auth done');
-                        $('#view').empty().text(JSON.stringify(result));
-                    }).fail(function() {
-                        console.log('hit failed');
-                    });
-                }).fail(function() {
-                    console.log('auth canceled');
-                });
-            });
             return $li;
+        },
+
+        showBugView: function(id) {
+            return $.Deferred(function(deferred) {
+                var $dialog = $('#bugview');
+
+                $.mobile.changePage('#bugview');
+                
+                $dialog.find('h1').text('Bug $1'.replace('$1', id + ''));
+
+                bz.call('Bug.get', {
+                    ids: [id]
+                }).then(function(result) {
+                    $('#bugview .view').text(JSON.stringify(result));
+                });
+            }).promise();
         }
     };
 
@@ -120,6 +113,36 @@ $(function() {
     window.bz = bz;
     
     $(function() {
+    
+        /* Events for the buglist */
+        var $buglist = $('#buglist');
+        $('#buglist li a').live('click', function(event) {
+            event.preventDefault();
+            /*
+            var user = prompt('Username?'),
+                pass = prompt('Password?');
+            */
+            /*
+            app.authenticate().then(function(auth) {
+                bz.call('Bug.add_comment', {
+                    id: bug.id,
+                    comment: 'Just testing Bugzilla tools (not the spammer)',
+                    Bugzilla_login: auth.user,
+                    Bugzilla_password: auth.pass
+                }).then(function(result) {
+                    console.log('auth done');
+                    $('#view').empty().text(JSON.stringify(result));
+                }).fail(function() {
+                    console.log('hit failed');
+                });
+            }).fail(function() {
+                console.log('auth canceled');
+            });
+            */
+            var bug = $(this).data('bug');
+            app.showBugView(bug.id);
+        });
+
         bz.call('Bug.search', {
             summary: "android"
         }).then(function(result) {
