@@ -30,7 +30,8 @@ $context = stream_context_create(
         'http' => array(
             'method' => 'POST',
             'content' => $data,
-            'header' => "Content-Type: $type\r\n"
+            'header' => "Content-Type: $type\r\n",
+            'ignore_errors' => true
         )
     )
 );
@@ -42,5 +43,5 @@ if ($stream) {
     fclose($stream);
 } else {
     header('HTTP/1.x 503 Gateway Error');
-    die('Invalid Content-Type');
+    die('Gateway error');
 }

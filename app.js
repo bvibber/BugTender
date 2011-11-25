@@ -7,38 +7,34 @@ $(function() {
     function Bugzilla(url) {
         var that = this;
         var target = url + '/jsonrpc.cgi';
-        var service = new rpc.ServiceProxy(target, {
-            asynchronous: true,
-            sanitize: true,
-            methods: ['Bug.search', 'Bug.get', 'Bug.add_comment']
-        });
-
-        var proxy = function(method, call, params) {
+        
+        /**
+         * @param {string} methods
+         * @param {object} params
+         * @return promise
+         */
+        this.call = function(method, params) {
             return jQuery.Deferred(function(deferred) {
-                call({
-                    params: params,
-                    onSuccess: function(json) {
-                        deferred.resolve(json);
-                    },
-                    onError: function(err) {
-                        deferred.reject(err);
+                $.ajax({
+                    url: target,
+                    type: 'POST',
+                    data: JSON.stringify({
+                        method: method,
+                        params: [params]
+                    })
+                }).then(function(data) {
+                    if ('error' in data && data.error !== null) {
+                        deferred.reject(data.error);
+                    } else if ('result' in data) {
+                        deferred.resolve(data.result);
+                    } else {
+                        deferred.reject('Missing result; invalid return?');
                     }
+                }).fail(function(xhr, err) {
+                    deferred.reject(err);
                 });
             }).promise();
-            return deferred.promise();
         };
-
-        var makeProxy = function(method, call) {
-            return function(params) {
-                return proxy(method, call, params);
-            };
-        };
-
-        this.Bug = {
-            search: makeProxy('Bug.search', service.Bug.search),
-            get: makeProxy('Bug.get', service.Bug.get),
-            add_comment: makeProxy('Bug.add_comment', service.Bug.add_comment)
-        }
     }
 
     /**
@@ -78,10 +74,19 @@ $(function() {
 
     var bz = new Bugzilla(BugTender_target);
     window.bz = bz;
+    /*
     bz.Bug.search({
         summary: "android"
     //bz.Bug.get({
     //    ids: [1234]
+    }).then(function(result) {
+        //$('#view').text(JSON.stringify(result));
+        showBugs(result.bugs);
+    });
+    */
+    
+    bz.call('Bug.search', {
+        summary: "android"
     }).then(function(result) {
         //$('#view').text(JSON.stringify(result));
         showBugs(result.bugs);
