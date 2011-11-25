@@ -70,63 +70,60 @@ $(function() {
                     role: 'dialog'
                 });
             }).promise();
+        },
+
+        /**
+         * @param {Array of Bug objects} bugs
+         */
+        showBugs: function(bugs) {
+            var $list = $('#view ul');
+            $list.empty();
+            
+            $.each(bugs, function(i, bug) {
+                app.buildBugRow(bug).appendTo($list);
+            });
+            $list.listview('refresh');
+        },
+
+        buildBugRow: function(bug) {
+            var $li = $('<li>'),
+                $a = $('<a>').appendTo($li);
+            $a.text(bug.id + ' ' + bug.summary);
+            
+            $a.click(function(event) {
+                event.preventDefault;
+                /*
+                var user = prompt('Username?'),
+                    pass = prompt('Password?');
+                */
+                app.authenticate().then(function(auth) {
+                    bz.call('Bug.add_comment', {
+                        id: bug.id,
+                        comment: 'Just testing Bugzilla tools (not the spammer)',
+                        Bugzilla_login: auth.user,
+                        Bugzilla_password: auth.pass
+                    }).then(function(result) {
+                        console.log('auth done');
+                        $('#view').empty().text(JSON.stringify(result));
+                    }).fail(function() {
+                        console.log('hit failed');
+                    });
+                }).fail(function() {
+                    console.log('auth canceled');
+                });
+            });
+            return $li;
         }
     };
-
-    /**
-     * @param {Array of Bug objects} bugs
-     */
-    function showBugs(bugs) {
-        var $list = $('#view ul');
-        $list.empty();
-        
-        $.each(bugs, function(i, bug) {
-            buildBugRow(bug).appendTo($list);
-        });
-        $list.listview('refresh');
-    }
-
-    function buildBugRow(bug) {
-        var $li = $('<li>'),
-            $a = $('<a>').appendTo($li);
-        $a.text(bug.id + ' ' + bug.summary);
-        
-        $a.click(function(event) {
-            event.preventDefault;
-            /*
-            var user = prompt('Username?'),
-                pass = prompt('Password?');
-            */
-            app.authenticate().then(function(auth) {
-                bz.call('Bug.add_comment', {
-                    id: bug.id,
-                    comment: 'Just testing Bugzilla tools (not the spammer)',
-                    Bugzilla_login: auth.user,
-                    Bugzilla_password: auth.pass
-                }).then(function(result) {
-                    console.log('auth done');
-                    $('#view').empty().text(JSON.stringify(result));
-                }).fail(function() {
-                    console.log('hit failed');
-                });
-            }).fail(function() {
-                console.log('auth canceled');
-            });
-        });
-        return $li;
-    }
 
     var bz = new Bugzilla(BugTender_target);
     window.bz = bz;
     
-    // fixme doesn't trigger if we started on this page!?
-    $('#buglist').bind('pageshow', function() {
-        console.log('bug list loaded');
+    $(function() {
         bz.call('Bug.search', {
             summary: "android"
         }).then(function(result) {
-            //$('#view').text(JSON.stringify(result));
-            showBugs(result.bugs);
+            app.showBugs(result.bugs);
         });
     });
 
