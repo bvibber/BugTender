@@ -18,9 +18,11 @@ $(function() {
                 $.ajax({
                     url: target,
                     type: 'POST',
+                    contentType: 'application/json; charset=UTF-8',
                     data: JSON.stringify({
+                        version: '1.0',
                         method: method,
-                        params: [params]
+                        params: params
                     })
                 }).then(function(data) {
                     if ('error' in data && data.error !== null) {
@@ -62,11 +64,13 @@ $(function() {
         $button.click(function() {
             var user = prompt('Username?'),
                 pass = prompt('Password?');
-            bz.Bug.add_comment({
+            bz.call('Bug.add_comment', {
                 id: bug.id,
                 comment: 'Just testing Bugzilla tools',
                 Bugzilla_login: user,
                 Bugzilla_password: pass
+            }).then(function(result) {
+                $('#view').empty().text(JSON.stringify(result));
             });
         });
         return $tr;
@@ -74,16 +78,6 @@ $(function() {
 
     var bz = new Bugzilla(BugTender_target);
     window.bz = bz;
-    /*
-    bz.Bug.search({
-        summary: "android"
-    //bz.Bug.get({
-    //    ids: [1234]
-    }).then(function(result) {
-        //$('#view').text(JSON.stringify(result));
-        showBugs(result.bugs);
-    });
-    */
     
     bz.call('Bug.search', {
         summary: "android"

@@ -16,12 +16,9 @@ if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST')
     die('Invalid method; only POST accepted');
 }
 
-if (isset($_SERVER['CONTENT_TYPE']) &&
-    preg_match('/^[a-z0-9_\/;= -]+$/i', $_SERVER['CONTENT_TYPE'])) {
-    $type = $_SERVER['CONTENT_TYPE'];
-} else {
+if (!isset($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] !== 'application/json; charset=UTF-8') {
     header('HTTP/1.x 400 Bad Request');
-    die('Invalid Content-Type ' . htmlspecialchars($_SERVER['CONTENT_TYPE']));
+    die('Invalid Content-Type: ' . htmlspecialchars($_SERVER['CONTENT_TYPE']));
 }
 
 $data = file_get_contents('php://input');
@@ -31,12 +28,14 @@ $context = stream_context_create(
             'method' => 'POST',
             'content' => $data,
             'header' => "Content-Type: $type\r\n",
-            'ignore_errors' => true
         )
     )
 );
 
+$old = error_reporting(0);
 $stream = fopen(BUGTENDER_PROXY, "r", false, $context);
+error_reporting($old);
+
 if ($stream) {
     header('Content-Type: application/json');
     fpassthru($stream);
