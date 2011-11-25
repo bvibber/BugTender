@@ -87,37 +87,22 @@ $(function() {
 
         buildBugRow: function(bug) {
             var $li = $('<li>'),
-                $a = $('<a>').data('bug', bug).appendTo($li);
+                $a = $('<a>').attr('href', '#bug' + bug.id).appendTo($li);
             $a.text(bug.id + ' ' + bug.summary);
             return $li;
         },
 
         showBugView: function(id) {
             return $.Deferred(function(deferred) {
-                var $view = $('#bugview');
+            
+                if (typeof id !== 'number'
+                    || id <= 0
+                    || id !== parseInt(id + '')) {
+                    deferred.reject('Invalid bug id');
+                    return;
+                }
 
-                $.mobile.changePage('#bugview');
-                
-                $view.find('h1').text('Bug $1'.replace('$1', id + ''));
-
-                bz.call('Bug.get', {
-                    ids: [id]
-                }).then(function(result) {
-                    var bug = result.bugs[0];
-                    $view
-                        .find('.summary')
-                            .text(bug.summary)
-                            .end()
-                        .find('.assigned')
-                            .text(bug.assigned_to)
-                            .end()
-                        .find('.status')
-                            .text(bug.status)
-                            .end()
-                        .find('.raw')
-                            .text(JSON.stringify(bug))
-                            .end();
-                });
+                $.mobile.changePage('#bug' + id);
             }).promise();
         }
     };
@@ -127,10 +112,39 @@ $(function() {
     
     $(function() {
     
-        /* Events for the buglist */
-        var $buglist = $('#buglist');
-        $('#buglist li a').live('click', function(event) {
-            event.preventDefault();
+        $(document).bind('pagebeforechange', function(e, data) {
+            if (typeof data.toPage === "string") {
+                var matches = data.toPage.match(/#bug(\d+)$/);
+                if (matches) {
+                    var id = parseInt(matches[1]),
+                        $view = $('#bug' + id);
+                    if ($view.length == 0) {
+                        // Haven't seen this bug yet; create a view for it
+                        $view = $('#bugview').clone().attr('id', 'bug' + id).appendTo('body');
+                    }
+
+                    $view.find('h1').text('Bug $1'.replace('$1', id + ''));
+                    bz.call('Bug.get', {
+                        ids: [id]
+                    }).then(function(result) {
+                        var bug = result.bugs[0];
+                        $view
+                            .find('.summary')
+                                .text(bug.summary)
+                                .end()
+                            .find('.assigned')
+                                .text(bug.assigned_to)
+                                .end()
+                            .find('.status')
+                                .text(bug.status)
+                                .end()
+                            .find('.raw')
+                                .text(JSON.stringify(bug))
+                                .end();
+                    });
+                }
+            }
+        });
             /*
             var user = prompt('Username?'),
                 pass = prompt('Password?');
@@ -152,9 +166,6 @@ $(function() {
                 console.log('auth canceled');
             });
             */
-            var bug = $(this).data('bug');
-            app.showBugView(bug.id);
-        });
 
         bz.call('Bug.search', {
             summary: "android"
