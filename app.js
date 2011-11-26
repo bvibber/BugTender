@@ -126,6 +126,7 @@ $(function() {
             route(/#bug(\d+)$/, app.initBugView, '#bug-template');
             route(/#comments(\d+)$/, app.initCommentsView, '#comments-template');
             route(/#deps(\d+)$/, app.initDepsView, '#deps-template');
+            /*
             route(/#buglist$/, function() {
                 bz.call('Bug.search', {
                     summary: "android"
@@ -133,6 +134,7 @@ $(function() {
                     app.showBugs(result.bugs);
                 });
             });
+            */
         },
 
         initBugView: function($view, matches) {
@@ -254,6 +256,21 @@ $(function() {
     if (document.location.hash !== '') {
         $.mobile.changePage(document.location.hash);
     }
+    
+    $('#buglist .bugsearch').bind('change keyup cut paste', function(event) {
+        var $search = $(this);
+        var terms = $search.val().split(" ");
+
+        if (terms.length) {
+            bz.call('Bug.search', {
+                summary: terms
+            }).then(function(result) {
+                app.showBugs(result.bugs);
+            });
+        } else {
+                app.showBugs([]);
+        }
+    });
 
             /*
             var user = prompt('Username?'),
