@@ -5,3 +5,28 @@
 .comments .text {
     white-space: pre-wrap;
 }
+
+.severity-normal a {
+    color: #106581 !important;
+}
+
+.severity-enhancement a {
+    color: #106581 !important;
+}
+
+.severity-major a {
+    color: #D30000 !important;
+}
+
+.severity-minor a {
+    color: #669900 !important;
+}
+
+.severity-blocker a {
+    color: red !important;
+    font-weight: bold;
+}
+
+.status-resolved a {
+    color: gray !important;
+}

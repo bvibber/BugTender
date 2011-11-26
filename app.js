@@ -88,6 +88,9 @@ $(function() {
             var $li = $('<li>'),
                 $a = $('<a>').attr('href', '#bug' + bug.id).appendTo($li);
             $a.text(bug.id + ' ' + bug.summary);
+            $li.addClass('status-' + bug.status.toLowerCase());
+            $li.addClass('priority-' + bug.priority.toLowerCase());
+            $li.addClass('severity-' + bug.severity.toLowerCase());
             return $li;
         },
 
