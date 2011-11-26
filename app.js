@@ -58,7 +58,6 @@ $(function() {
 
                 var $login = $dialog.find('a.login');
                 $login.click(function(event) {
-                    console.log('clicked login');
                     var auth = {
                         user: $dialog.find('input[type=email]').val(),
                         pass: $dialog.find('input[type=password]').val()
