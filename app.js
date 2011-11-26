@@ -204,7 +204,7 @@ $(function() {
          * @return jQuery
          */
         renderCommentInList: function(comment) {
-            var snippet = comment.author + ' ' + comment.time;
+            var snippet = comment.author.replace(/@.*$/, '') + ' ' + app.prettyTimestamp(comment.time);
             return $(
                 '<div class="comment" data-role="collapsible">' +
                     '<h3 class="snippet"></h3>' +
@@ -217,6 +217,28 @@ $(function() {
             .find('.time').text(comment.time).end()
             .find('.text').text(comment.text).end()
             .collapsible();
+        },
+        
+        /**
+         * Format an attractive timestamp, with precision depending on
+         * distance to current time.
+         *
+         * @param {String} ts
+         * @return String
+         */
+        prettyTimestamp: function(ts) {
+            var date = new Date(Date.parse(ts)), // ??
+                now = new Date(),
+                interval = now.getTime() - date.getTime();
+            if (interval < 30) {
+                return 'just now';
+            } else if (interval < 3600) {
+                return Math.round(interval / 60) = ' minutes ago';
+            } else if (interval < 86400) {
+                return Math.round(interval / 3600) = ' hours ago';
+            } else {
+                return date.toLocaleDateString();
+            }
         }
     };
 
