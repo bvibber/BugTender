@@ -17,7 +17,7 @@
             <div data-role="header">
                 <h1>BugTender</h1>
             </div>
-            <a href="#buglist">Bug list</a>
+            <a href="#buglist" data-role="button">Bug list</a>
             <div data-role="footer">
                 <h4>bottom bar</h4>
             </div>
@@ -25,7 +25,7 @@
 
         <div id="buglist" data-role="page">
             <div data-role="header">
-                <a href="#index">&lt; Home</a>
+                <a href="#index" data-rel="back">&lt; Home</a>
                 <h1>Bug list</h1>
             </div>
             <div id="view" data-role="content">
@@ -40,7 +40,7 @@
 
         <div id="bug-template" data-role="page">
             <div data-role="header">
-                <a href="#buglist">&lt; Bug list</a>
+                <a href="#" data-rel="back">&lt; Back</a>
                 <h1>Bug #</h1>
             </div>
             <div data-role="content" class="view">
