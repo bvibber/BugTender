@@ -124,6 +124,10 @@ $(function() {
                         .find('.summary')
                             .text(bug.summary)
                             .end()
+                        .find('.severity').text(bug.severity).end()
+                        .find('.priority').text(bug.priority).end()
+                        .find('.keywords').text(bug.keywords.join(', ')).end()
+                        .find('.dependencies').text(bug.keywords.length + '').end()
                         .find('.assigned')
                             .text(bug.assigned_to)
                             .end()
@@ -134,6 +138,17 @@ $(function() {
                             .text(JSON.stringify(bug))
                             .end();
                 });
+                
+                // Load comments separately.
+                // @todo load comments in chunks?
+                bz.call('Bug.comments', {
+                    ids: [id]
+                }).then(function(result) {
+                    $.each(result.bugs[id].comments, function(i, comment) {
+                        console.log(comment);
+                        app.renderComment(comment).appendTo($view.find('.comments'));
+                    });
+                });
             }
             
             if (toPage.match(/#buglist$/)) {
@@ -143,6 +158,20 @@ $(function() {
                     app.showBugs(result.bugs);
                 });
             }
+        },
+        
+        /**
+         * @return jQuery
+         */
+        renderComment: function(comment) {
+            return $('<div>')
+                .append(
+                    $('<div>').text(comment.author)
+                ).append(
+                    $('<div>').text(comment.time)
+                ).append(
+                    $('<div>').text(comment.text)
+                );
         }
     };
 

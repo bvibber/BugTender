@@ -45,8 +45,22 @@
             </div>
             <div data-role="content" class="view">
                 <h2 class="summary"></h2>
-                <div>Status: <span class="status"></span></div>
-                <div>Assigned: <span class="assigned"></span></div>
+                
+                <ul data-role="listview">
+                    <li>Status: <span class="status">...</span></li>
+                    <li>Resolution: <span class="resolution">...</span></li>
+                    <li>Priority: <span class="priority">...</span></li>
+                    <li>Severity: <span class="severity">...</span></li>
+                    <li>Assigned: <span class="assigned">...</span></li>
+                    <li>Keywords: <span class="keywords">...</span></li>
+                    <li><a href="#bug$1">Dependencies <span class="dependencies ui-li-count">...</span></a></li>
+                </ul>
+                
+                <hr>
+                <h4>Comments</h4>
+                <div class="comments">
+                </div>
+                
                 <div class="raw"></div>
             </div>
             <div data-role="footer" >
