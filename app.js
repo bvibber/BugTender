@@ -127,15 +127,12 @@ $(function() {
                         .find('.severity').text(bug.severity).end()
                         .find('.priority').text(bug.priority).end()
                         .find('.keywords').text(bug.keywords.join(', ')).end()
-                        .find('.dependencies').text(bug.keywords.length + '').end()
+                        .find('.deps-count').text(bug.keywords.length + '').end()
                         .find('.assigned')
                             .text(bug.assigned_to)
                             .end()
                         .find('.status')
                             .text(bug.status)
-                            .end()
-                        .find('.raw')
-                            .text(JSON.stringify(bug))
                             .end();
                 });
                 
@@ -144,10 +141,9 @@ $(function() {
                 bz.call('Bug.comments', {
                     ids: [id]
                 }).then(function(result) {
-                    $.each(result.bugs[id].comments, function(i, comment) {
-                        console.log(comment);
-                        app.renderComment(comment).appendTo($view.find('.comments'));
-                    });
+                    var comments = result.bugs[id].comments;
+                    $view.find('.comments-count').text(comments.length + '');
+                    //app.recordSeenComments(id, comments);
                 });
             }
             
