@@ -260,26 +260,39 @@ $(function() {
     }
     
     $('#buglist .bugsearch').bind('change keyup cut paste', function(event) {
-        var $search = $(this);
-        var terms = $.trim($search.val());
+        var $search = $(this),
+            terms = $.trim($search.val());
         
         if (app.bugSearchTimeout === undefined) {
             // Wait a fraction of a second, more keystrokes may be coming
             app.bugSearchTimeout = window.setTimeout(function() {
                 app.bugSearchTimeout = undefined;
-                var queue = ++app.bugSearchQueue;
+                var queue = ++app.bugSearchQueue,
+                    byId = {bugs: []},
+                    bySummary = {bugs: []};
+
+                if (terms.match(/^\d+$/)) {
+                    var bugId = parseInt(terms);
+                    byId = bz.call('Bug.search', {
+                        id: bugId
+                    });
+                }
                 if (terms.length) {
-                    bz.call('Bug.search', {
+                    bySummary = bz.call('Bug.search', {
                         summary: terms,
                         limit: 50
-                    }).then(function(result) {
-                        if (app.bugSearchQueue == queue) {
-                            app.showBugs(result.bugs);
-                        }
                     });
-                } else {
-                        app.showBugs([]);
                 }
+                
+                $.when(byId, bySummary)
+                .then(function(idResult, termsResult) {
+                    if (app.bugSearchQueue == queue) {
+                        var bugs = [].concat(idResult.bugs).concat(termsResult.bugs);
+                        app.showBugs(bugs);
+                    } else {
+                        // @fixme save for later anyway?
+                    }
+                });
             }, 250);
         }
     });
