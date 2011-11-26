@@ -241,7 +241,9 @@ $(function() {
             } else {
                 return date.toLocaleDateString();
             }
-        }
+        },
+        
+        bugSearchQueue: 0
     };
 
     var bz = new Bugzilla(BugTender_target);
@@ -259,16 +261,26 @@ $(function() {
     
     $('#buglist .bugsearch').bind('change keyup cut paste', function(event) {
         var $search = $(this);
-        var terms = $search.val().split(" ");
-
-        if (terms.length) {
-            bz.call('Bug.search', {
-                summary: terms
-            }).then(function(result) {
-                app.showBugs(result.bugs);
-            });
-        } else {
-                app.showBugs([]);
+        var terms = $.trim($search.val());
+        
+        if (app.bugSearchTimeout === undefined) {
+            // Wait a fraction of a second, more keystrokes may be coming
+            app.bugSearchTimeout = window.setTimeout(function() {
+                app.bugSearchTimeout = undefined;
+                var queue = ++app.bugSearchQueue;
+                if (terms.length) {
+                    bz.call('Bug.search', {
+                        summary: terms,
+                        limit: 50
+                    }).then(function(result) {
+                        if (app.bugSearchQueue == queue) {
+                            app.showBugs(result.bugs);
+                        }
+                    });
+                } else {
+                        app.showBugs([]);
+                }
+            }, 250);
         }
     });
 
