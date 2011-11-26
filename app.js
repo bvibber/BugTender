@@ -106,68 +106,117 @@ $(function() {
         },
         
         preinitPage: function(toPage) {
-            var matches = toPage.match(/#bug(\d+)$/);
-            if (matches) {
-                var id = parseInt(matches[1]),
-                    $view = $('#bug' + id);
-                if ($view.length == 0) {
-                    // Haven't seen this bug yet; create a view for it
-                    $view = $('#bugview').clone().attr('id', 'bug' + id).appendTo('body');
+            var route = function(regex, func, template) {
+                var matches = toPage.match(regex);
+                if (matches) {
+                    var $view = $(matches[0]);
+                    if (template) {
+                        if ($view.length == 0) {
+                            // Haven't seen this page yet; create a view for it
+                            $view = $(template).clone()
+                                .attr('id', matches[0].substr(1))
+                                .appendTo('body');
+                        }
+                    }
+                    if (func) {
+                        func($view, matches);
+                    }
                 }
-
-                $view.find('h1').text('Bug $1'.replace('$1', id + ''));
-                bz.call('Bug.get', {
-                    ids: [id]
-                }).then(function(result) {
-                    var bug = result.bugs[0];
-                    $view
-                        .find('.summary')
-                            .text(bug.summary)
-                            .end()
-                        .find('.severity').text(bug.severity).end()
-                        .find('.priority').text(bug.priority).end()
-                        .find('.keywords').text(bug.keywords.join(', ')).end()
-                        .find('.deps-count').text(bug.keywords.length + '').end()
-                        .find('.assigned')
-                            .text(bug.assigned_to)
-                            .end()
-                        .find('.status')
-                            .text(bug.status)
-                            .end();
-                });
-                
-                // Load comments separately.
-                // @todo load comments in chunks?
-                bz.call('Bug.comments', {
-                    ids: [id]
-                }).then(function(result) {
-                    var comments = result.bugs[id].comments;
-                    $view.find('.comments-count').text(comments.length + '');
-                    //app.recordSeenComments(id, comments);
-                });
             }
-            
-            if (toPage.match(/#buglist$/)) {
+            route(/#bug(\d+)$/, app.initBugView, '#bug-template');
+            route(/#comments(\d+)$/, app.initCommentsView, '#comments-template');
+            route(/#deps(\d+)$/, app.initDepsView, '#deps-template');
+            route(/#buglist$/, function() {
                 bz.call('Bug.search', {
                     summary: "android"
                 }).then(function(result) {
                     app.showBugs(result.bugs);
                 });
-            }
+            });
         },
-        
+
+        initBugView: function($view, matches) {
+            var id = parseInt(matches[1]);
+            $view
+                .find('h1')
+                    .text('Bug $1'.replace('$1', id + ''))
+                    .end()
+                .find('a.comments')
+                    .attr('href', '#comments' + id)
+                    .end()
+                .find('a.deps')
+                    .attr('href', '#deps' + id)
+                    .end();
+            bz.call('Bug.get', {
+                ids: [id]
+            }).then(function(result) {
+                var bug = result.bugs[0];
+                $view
+                    .find('.summary')
+                        .text(bug.summary)
+                        .end()
+                    .find('.severity').text(bug.severity).end()
+                    .find('.priority').text(bug.priority).end()
+                    .find('.keywords').text(bug.keywords.join(', ')).end()
+                    .find('.deps-count').text(bug.keywords.length + '').end()
+                    .find('.assigned')
+                        .text(bug.assigned_to)
+                        .end()
+                    .find('.status')
+                        .text(bug.status)
+                        .end();
+            });
+            
+            // Load comments separately.
+            // @todo load comments in chunks?
+            bz.call('Bug.comments', {
+                ids: [id]
+            }).then(function(result) {
+                var comments = result.bugs[id].comments;
+                $view.find('.comments-count').text(comments.length + '');
+                //app.recordSeenComments(id, comments);
+            });
+        },
+
+        initDepsView: function($view, matches) {
+            var id = parseInt(matches[1]);
+        },
+
+        initCommentsView: function($view, matches) {
+            var id = parseInt(matches[1]),
+                $comments = $view.find('.comments');
+            console.log($comments);
+            // @todo we've probably already got these; use saved ones
+            bz.call('Bug.comments', {
+                ids: [id]
+            }).then(function(result) {
+                var comments = result.bugs[id].comments;
+                $comments.empty();
+                $.each(comments, function(i, comment) {
+                    console.log('showing comment', comment);
+                    app.renderCommentInList(comment).appendTo($comments);
+                });
+                $comments.listview('refresh');
+            });
+        },
+
         /**
          * @return jQuery
          */
-        renderComment: function(comment) {
-            return $('<div>')
-                .append(
-                    $('<div>').text(comment.author)
-                ).append(
-                    $('<div>').text(comment.time)
-                ).append(
-                    $('<div>').text(comment.text)
-                );
+        renderCommentInList: function(comment) {
+            var snippet = comment.author + ' ' + comment.time;
+            return $(
+                '<div class="comment" data-role="collapsible">' +
+                    '<h3 class="snippet"></h3>' +
+                    '<p><a class="author" href="#user-template"></a></p>' +
+                    '<p class="time"></p>' +
+                    '<p class="text"></p>' +
+                '</div>'
+            ).find('.snippet').text(snippet).end()
+            .find('.author').text(comment.author).end()
+            .find('.time').text(comment.time).end()
+            .find('.text').text(comment.text).end()
+            .collapsible();
         }
     };
 
