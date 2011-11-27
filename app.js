@@ -1,4 +1,4 @@
-$(function() {
+(function($) {
 
     /**
      * @param {string} url base url, eg 'https://bugzilla.wikimedia.org'
@@ -109,7 +109,7 @@ $(function() {
         },
         
         preinitPage: function(toPage) {
-            var route = function(regex, func, template) {
+            var route = function(regex, template) {
                 var matches = toPage.match(regex);
                 if (matches) {
                     var $view = $(matches[0]);
@@ -121,14 +121,11 @@ $(function() {
                                 .appendTo('body');
                         }
                     }
-                    if (func) {
-                        func($view, matches);
-                    }
                 }
             }
-            route(/#bug(\d+)$/, app.initBugView, '#bug-template');
-            route(/#comments(\d+)$/, app.initCommentsView, '#comments-template');
-            route(/#deps(\d+)$/, app.initDepsView, '#deps-template');
+            route(/#bug(\d+)$/, '#bug-template');
+            route(/#comments(\d+)$/, '#comments-template');
+            route(/#deps(\d+)$/, '#deps-template');
             /*
             route(/#buglist$/, function() {
                 bz.call('Bug.search', {
@@ -139,9 +136,21 @@ $(function() {
             });
             */
         },
+        
+        extractId: function($view) {
+            var idAttr = $view.attr('id');
+            if (!idAttr) {
+                throw new Error("element has no id for extractId");
+            }
+            var matches = idAttr.match(/(\d+)$/);
+            if (!matches) {
+                throw new Error("element id format is not valid for extractId");
+            }
+            return parseInt(matches[1]);
+        },
 
-        initBugView: function($view, matches) {
-            var id = parseInt(matches[1]);
+        initBugView: function($view) {
+            var id = app.extractId($view);
             $view
                 .find('h1')
                     .text('Bug $1'.replace('$1', id + ''))
@@ -183,12 +192,12 @@ $(function() {
             });
         },
 
-        initDepsView: function($view, matches) {
-            var id = parseInt(matches[1]);
+        initDepsView: function($view) {
+            var id = app.extractId($view);
         },
 
-        initCommentsView: function($view, matches) {
-            var id = parseInt(matches[1]),
+        initCommentsView: function($view) {
+            var id = app.extractId($view),
                 $comments = $view.find('.comments');
             console.log($comments);
             // @todo we've probably already got these; use saved ones
@@ -252,54 +261,74 @@ $(function() {
     var bz = new Bugzilla(BugTender_target);
     window.bz = bz;
     
-    $(document).bind('pagebeforechange', function(e, data) {
-        if (typeof data.toPage === "string") {
-            app.preinitPage(data.toPage);
-        }
-    });
-    // hack? to get the initial 'page' to initialize after reloading or following a #link
-    if (document.location.hash !== '') {
-        $.mobile.changePage(document.location.hash);
-    }
+    /** Set up initializers for each page type */
+    $('#buglist').live('pageinit', function() {
+        $('#buglist .bugsearch').bind('change keyup cut paste', function(event) {
+            var $search = $(this),
+                terms = $.trim($search.val());
+            
+            if (app.bugSearchTimeout === undefined) {
+                // Wait a fraction of a second, more keystrokes may be coming
+                app.bugSearchTimeout = window.setTimeout(function() {
+                    app.bugSearchTimeout = undefined;
+                    var queue = ++app.bugSearchQueue,
+                        byId = {bugs: []},
+                        bySummary = {bugs: []};
     
-    $('#buglist .bugsearch').bind('change keyup cut paste', function(event) {
-        var $search = $(this),
-            terms = $.trim($search.val());
-        
-        if (app.bugSearchTimeout === undefined) {
-            // Wait a fraction of a second, more keystrokes may be coming
-            app.bugSearchTimeout = window.setTimeout(function() {
-                app.bugSearchTimeout = undefined;
-                var queue = ++app.bugSearchQueue,
-                    byId = {bugs: []},
-                    bySummary = {bugs: []};
-
-                if (terms.match(/^\d+$/)) {
-                    var bugId = parseInt(terms);
-                    byId = bz.call('Bug.search', {
-                        id: bugId
-                    });
-                }
-                if (terms.length) {
-                    bySummary = bz.call('Bug.search', {
-                        summary: terms,
-                        limit: 50
-                    });
-                }
-                
-                $.when(byId, bySummary)
-                .then(function(idResult, termsResult) {
-                    if (app.bugSearchQueue == queue) {
-                        var bugs = [].concat(idResult.bugs).concat(termsResult.bugs);
-                        app.showBugs(bugs);
-                    } else {
-                        // @fixme save for later anyway?
+                    if (terms.match(/^\d+$/)) {
+                        var bugId = parseInt(terms);
+                        byId = bz.call('Bug.search', {
+                            id: bugId
+                        });
                     }
-                });
-            }, 250);
-        }
+                    if (terms.length) {
+                        bySummary = bz.call('Bug.search', {
+                            summary: terms,
+                            limit: 50
+                        });
+                    }
+                    
+                    $.when(byId, bySummary)
+                    .then(function(idResult, termsResult) {
+                        if (app.bugSearchQueue == queue) {
+                            var bugs = [].concat(idResult.bugs).concat(termsResult.bugs);
+                            app.showBugs(bugs);
+                        } else {
+                            // @fixme save for later anyway?
+                        }
+                    });
+                }, 250);
+            }
+        });
+        console.log('buglist pageinit!', this);
+    });
+    $('.bug-page').live('pageinit', function() {
+        console.log('bug pageinit!', this);
+        app.initBugView($(this));
+    });
+    $('.comments-page').live('pageinit', function() {
+        console.log('comment pageinit!', this);
+        app.initCommentsView($(this));
+    });
+    $('.deps-page').live('pageinit', function() {
+        console.log('comment pageinit!', this);
+        app.initDepsView($(this));
     });
 
+    /** Autocreate bug pages on demand */
+    $(function() {
+        $(document).bind('pagebeforechange', function(e, data) {
+            console.log('pagebeforechange');
+            if (typeof data.toPage === "string") {
+                app.preinitPage(data.toPage);
+            }
+        });
+        // hack? to get the initial 'page' to initialize after reloading or following a #link
+        if (document.location.hash !== '') {
+            $.mobile.changePage(document.location.hash);
+        }
+    });
+    
             /*
             var user = prompt('Username?'),
                 pass = prompt('Password?');
@@ -322,4 +351,4 @@ $(function() {
             });
             */
 
-});
+})(jQuery);
