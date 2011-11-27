@@ -3,7 +3,12 @@ test('Something basic', function() {
 });
 
 function MockBugzilla() {
+    var used = 0;
     this.call = function(method, params) {
+        if (used) {
+            throw new Error("MockBugzilla got called twice, expected only single call");
+        }
+        used = true;
         return $.Deferred(function(deferred) {
             setTimeout(function() {
                 var bugs = {

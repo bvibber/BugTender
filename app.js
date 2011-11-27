@@ -68,7 +68,6 @@
          */
         this.get = function(kind, ids) {
             if (!(kind in stored)) {
-                console.log(stored);
                 throw new Error("Unknown cache obj kind " + kind);
             }
             if (!$.isArray(ids)) {
@@ -86,14 +85,18 @@
                 }
             });
             return $.Deferred(function(deferred) {
-                types[kind](ids).then(function(data) {
-                    that.remember(kind, data);
-                    $.extend(results, data);
-                    deferred.resolve(data);
-                }).fail(function(err) {
-                    deferred.reject(err);
-                }).promise();
-            });
+                if (unseen.length) {
+                    types[kind](ids).then(function(data) {
+                        that.remember(kind, data);
+                        $.extend(results, data);
+                        deferred.resolve(data);
+                    }).fail(function(err) {
+                        deferred.reject(err);
+                    });
+                } else {
+                    deferred.resolve(results);
+                }
+            }).promise();
         };
         
         this.remember = function(kind, map) {
