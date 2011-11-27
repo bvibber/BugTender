@@ -1,4 +1,3 @@
-(function($) {
 
     /**
      * @param {string} url base url, eg 'https://bugzilla.wikimedia.org'
@@ -38,6 +37,71 @@
             }).promise();
         };
     }
+
+    function LocalStore(bz) {
+        var that = this;
+        var types = {
+            bug: function(ids) {
+                return $.Deferred(function(deferred) {
+                    bz.call('Bug.get', {ids: ids})
+                    .then(function(data) {
+                        var bugs = {};
+                        $.each(data.bugs, function(i, bug) {
+                            bugs[bug.id] = bug;
+                        });
+                        deferred.resolve(bugs);
+                    }).fail(function(err) {
+                        deferred.reject(err);
+                    });
+                }).promise();
+            }
+        };
+
+        var stored = {
+            bug: {}
+        };
+
+        /**
+         * @param string kind
+         * @param number or array of numbers: ids
+         * @return promise; on completion sends a map of ids -> bug objects
+         */
+        this.get = function(kind, ids) {
+            if (!(kind in stored)) {
+                console.log(stored);
+                throw new Error("Unknown cache obj kind " + kind);
+            }
+            if (!$.isArray(ids)) {
+                ids = [ids];
+            }
+            var results = {};
+            var unseen = $.map(ids, function(id) {
+                if (id in stored[kind]) {
+                    // Return the already-seen copy
+                    results[id] = stored[kind][id];
+                    return [];
+                } else {
+                    // Keep it in our list to load
+                    return [id];
+                }
+            });
+            return $.Deferred(function(deferred) {
+                types[kind](ids).then(function(data) {
+                    that.remember(kind, data);
+                    $.extend(results, data);
+                    deferred.resolve(data);
+                }).fail(function(err) {
+                    deferred.reject(err);
+                }).promise();
+            });
+        };
+        
+        this.remember = function(kind, map) {
+            $.extend(stored[kind], map);
+        };
+    }
+
+(function($) {
 
     var app = window.app = {
         /**
@@ -161,10 +225,9 @@
                 .find('a.deps')
                     .attr('href', '#deps' + id)
                     .end();
-            app.bz.call('Bug.get', {
-                ids: [id]
-            }).then(function(result) {
-                var bug = result.bugs[0];
+            app.cache.get('bug', id)
+            .then(function(bugs) {
+                var bug = bugs[id];
                 $view
                     .find('.summary')
                         .text(bug.summary)
@@ -257,6 +320,7 @@
 
         init: function() {
             app.bz = new Bugzilla(BugTender_target);
+            app.cache = new LocalStore(app.bz);
             
             /** Set up initializers for each page type */
             $('#buglist').live('pageinit', function() {
@@ -289,6 +353,13 @@
                             .then(function(idResult, termsResult) {
                                 if (app.bugSearchQueue == queue) {
                                     var bugs = [].concat(idResult.bugs).concat(termsResult.bugs);
+
+                                    // Remember these bugs for later
+                                    var map = {};
+                                    $.each(bugs, function(i, bug) {
+                                        map[bug.id] = bug;
+                                    });
+                                    app.cache.remember('bug', map);
                                     app.showBugs(bugs);
                                 } else {
                                     // @fixme save for later anyway?
