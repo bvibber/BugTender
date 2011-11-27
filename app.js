@@ -199,7 +199,6 @@
         initCommentsView: function($view) {
             var id = app.extractId($view),
                 $comments = $view.find('.comments');
-            console.log($comments);
             // @todo we've probably already got these; use saved ones
             bz.call('Bug.comments', {
                 ids: [id]
@@ -207,7 +206,6 @@
                 var comments = result.bugs[id].comments;
                 $comments.empty();
                 $.each(comments, function(i, comment) {
-                    console.log('showing comment', comment);
                     app.renderCommentInList(comment).appendTo($comments);
                 });
                 $comments.listview('refresh');
@@ -300,25 +298,20 @@
                 }, 250);
             }
         });
-        console.log('buglist pageinit!', this);
     });
     $('.bug-page').live('pageinit', function() {
-        console.log('bug pageinit!', this);
         app.initBugView($(this));
     });
     $('.comments-page').live('pageinit', function() {
-        console.log('comment pageinit!', this);
         app.initCommentsView($(this));
     });
     $('.deps-page').live('pageinit', function() {
-        console.log('comment pageinit!', this);
         app.initDepsView($(this));
     });
 
     /** Autocreate bug pages on demand */
     $(function() {
         $(document).bind('pagebeforechange', function(e, data) {
-            console.log('pagebeforechange');
             if (typeof data.toPage === "string") {
                 app.preinitPage(data.toPage);
             }
@@ -341,7 +334,6 @@
                     Bugzilla_login: auth.user,
                     Bugzilla_password: auth.pass
                 }).then(function(result) {
-                    console.log('auth done');
                     $('#view').empty().text(JSON.stringify(result));
                 }).fail(function() {
                     console.log('hit failed');
