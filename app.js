@@ -39,7 +39,7 @@
         };
     }
 
-    var app = {
+    var app = window.app = {
         /**
          * Prompt for authentication (if necessary) then pass credentials on.
          *
@@ -253,74 +253,74 @@
             }
         },
         
-        bugSearchQueue: 0
-    };
+        bugSearchQueue: 0,
 
-    var bz = new Bugzilla(BugTender_target);
-    window.bz = bz;
-    
-    /** Set up initializers for each page type */
-    $('#buglist').live('pageinit', function() {
-        $('#buglist .bugsearch').bind('change keyup cut paste', function(event) {
-            var $search = $(this),
-                terms = $.trim($search.val());
+        init: function() {
+            var bz = new Bugzilla(BugTender_target);
+            window.bz = bz;
             
-            if (app.bugSearchTimeout === undefined) {
-                // Wait a fraction of a second, more keystrokes may be coming
-                app.bugSearchTimeout = window.setTimeout(function() {
-                    app.bugSearchTimeout = undefined;
-                    var queue = ++app.bugSearchQueue,
-                        byId = {bugs: []},
-                        bySummary = {bugs: []};
-    
-                    if (terms.match(/^\d+$/)) {
-                        var bugId = parseInt(terms);
-                        byId = bz.call('Bug.search', {
-                            id: bugId
-                        });
-                    }
-                    if (terms.length) {
-                        bySummary = bz.call('Bug.search', {
-                            summary: terms,
-                            limit: 50
-                        });
-                    }
+            /** Set up initializers for each page type */
+            $('#buglist').live('pageinit', function() {
+                $('#buglist .bugsearch').bind('change keyup cut paste', function(event) {
+                    var $search = $(this),
+                        terms = $.trim($search.val());
                     
-                    $.when(byId, bySummary)
-                    .then(function(idResult, termsResult) {
-                        if (app.bugSearchQueue == queue) {
-                            var bugs = [].concat(idResult.bugs).concat(termsResult.bugs);
-                            app.showBugs(bugs);
-                        } else {
-                            // @fixme save for later anyway?
-                        }
-                    });
-                }, 250);
-            }
-        });
-    });
-    $('.bug-page').live('pageinit', function() {
-        app.initBugView($(this));
-    });
-    $('.comments-page').live('pageinit', function() {
-        app.initCommentsView($(this));
-    });
-    $('.deps-page').live('pageinit', function() {
-        app.initDepsView($(this));
-    });
-
-    /** Autocreate bug pages on demand */
-    $(function() {
-        $(document).bind('pagebeforechange', function(e, data) {
-            if (typeof data.toPage === "string") {
-                app.preinitPage(data.toPage);
-            }
-        });
-        // hack? to get the initial 'page' to initialize after reloading or following a #link
-        if (document.location.hash !== '') {
-            $.mobile.changePage(document.location.hash);
-        }
-    });
+                    if (app.bugSearchTimeout === undefined) {
+                        // Wait a fraction of a second, more keystrokes may be coming
+                        app.bugSearchTimeout = window.setTimeout(function() {
+                            app.bugSearchTimeout = undefined;
+                            var queue = ++app.bugSearchQueue,
+                                byId = {bugs: []},
+                                bySummary = {bugs: []};
+            
+                            if (terms.match(/^\d+$/)) {
+                                var bugId = parseInt(terms);
+                                byId = bz.call('Bug.search', {
+                                    id: bugId
+                                });
+                            }
+                            if (terms.length) {
+                                bySummary = bz.call('Bug.search', {
+                                    summary: terms,
+                                    limit: 50
+                                });
+                            }
+                            
+                            $.when(byId, bySummary)
+                            .then(function(idResult, termsResult) {
+                                if (app.bugSearchQueue == queue) {
+                                    var bugs = [].concat(idResult.bugs).concat(termsResult.bugs);
+                                    app.showBugs(bugs);
+                                } else {
+                                    // @fixme save for later anyway?
+                                }
+                            });
+                        }, 250);
+                    }
+                });
+            });
+            $('.bug-page').live('pageinit', function() {
+                app.initBugView($(this));
+            });
+            $('.comments-page').live('pageinit', function() {
+                app.initCommentsView($(this));
+            });
+            $('.deps-page').live('pageinit', function() {
+                app.initDepsView($(this));
+            });
+        
+            /** Autocreate bug pages on demand */
+            $(function() {
+                $(document).bind('pagebeforechange', function(e, data) {
+                    if (typeof data.toPage === "string") {
+                        app.preinitPage(data.toPage);
+                    }
+                });
+                // hack? to get the initial 'page' to initialize after reloading or following a #link
+                if (document.location.hash !== '') {
+                    $.mobile.changePage(document.location.hash);
+                }
+            });
     
             /*
             var user = prompt('Username?'),
@@ -342,5 +342,7 @@
                 console.log('auth canceled');
             });
             */
+        }
+    };
 
 })(jQuery);
