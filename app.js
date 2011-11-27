@@ -161,7 +161,7 @@
                 .find('a.deps')
                     .attr('href', '#deps' + id)
                     .end();
-            bz.call('Bug.get', {
+            app.bz.call('Bug.get', {
                 ids: [id]
             }).then(function(result) {
                 var bug = result.bugs[0];
@@ -183,7 +183,7 @@
             
             // Load comments separately.
             // @todo load comments in chunks?
-            bz.call('Bug.comments', {
+            app.bz.call('Bug.comments', {
                 ids: [id]
             }).then(function(result) {
                 var comments = result.bugs[id].comments;
@@ -200,7 +200,7 @@
             var id = app.extractId($view),
                 $comments = $view.find('.comments');
             // @todo we've probably already got these; use saved ones
-            bz.call('Bug.comments', {
+            app.bz.call('Bug.comments', {
                 ids: [id]
             }).then(function(result) {
                 var comments = result.bugs[id].comments;
@@ -256,8 +256,7 @@
         bugSearchQueue: 0,
 
         init: function() {
-            var bz = new Bugzilla(BugTender_target);
-            window.bz = bz;
+            app.bz = new Bugzilla(BugTender_target);
             
             /** Set up initializers for each page type */
             $('#buglist').live('pageinit', function() {
@@ -275,12 +274,12 @@
             
                             if (terms.match(/^\d+$/)) {
                                 var bugId = parseInt(terms);
-                                byId = bz.call('Bug.search', {
+                                byId = app.bz.call('Bug.search', {
                                     id: bugId
                                 });
                             }
                             if (terms.length) {
-                                bySummary = bz.call('Bug.search', {
+                                bySummary = app.bz.call('Bug.search', {
                                     summary: terms,
                                     limit: 50
                                 });
@@ -328,7 +327,7 @@
             */
             /*
             app.authenticate().then(function(auth) {
-                bz.call('Bug.add_comment', {
+                app.bz.call('Bug.add_comment', {
                     id: bug.id,
                     comment: 'Just testing Bugzilla tools (not the spammer)',
                     Bugzilla_login: auth.user,
