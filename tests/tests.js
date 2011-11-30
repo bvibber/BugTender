@@ -149,6 +149,10 @@ test('commentLinks', function() {
             'just some text'
         ],
         [
+            'some <b>scary html & stuff!</b>',
+            'some &lt;b&gt;scary html &amp; stuff!&lt;/b&gt;'
+        ],
+        [
             'talk about bug 12345 and stuff',
             'talk about <a href="#bug12345">bug 12345</a> and stuff'
         ],

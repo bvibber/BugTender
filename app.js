@@ -329,6 +329,9 @@
          * @return {String} html formatted
          */
         commentLinks: function(text) {
+            text = text.replace(/&/g, '&amp;');
+            text = text.replace(/</g, '&lt;');
+            text = text.replace(/>/g, '&gt;');
             text = text.replace(/\b(bug (\d+))\b/ig, '<a href="#bug$2">$1</a>');
             return text;
         },
