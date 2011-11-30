@@ -363,7 +363,7 @@
                 });
             }
             var options = {
-                limit: 50,
+                limit: 200,
                 resolution: resolution
             };
             if (terms.length) {
@@ -375,6 +375,8 @@
             .then(function(idResult, termsResult) {
                 if (app.bugSearchQueue == queue) {
                     var bugs = [].concat(idResult.bugs).concat(termsResult.bugs);
+                    
+                    bugs.sort(app.bugSortFunction()).reverse();
 
                     // Remember these bugs for later
                     var map = {};
@@ -387,6 +389,43 @@
                     // @fixme save for later anyway?
                 }
             });
+        },
+
+        bugSortFunction: function() {
+            var sortField = $('input[name=adv-sort]:checked').val();
+            var sortMap = {
+                creation_time: app.dateSorter,
+                last_change_time: app.dateSorter,
+                priority: app.prioritySorter,
+                resolution: app.resolutionSorter
+            };
+            if (!(sortField in sortMap)) {
+                throw new Error("Unsupported sort field: " + sortField);
+            }
+            var sorter = sortMap[sortField];
+            return function(a, b) {
+                return sorter(a[sortField], b[sortField]);
+            };
+        },
+
+        dateSorter: function(a, b) {
+            var da = app.parseDate(a),
+                db = app.parseDate(b);
+            return app.genericSorter(da, db);
+        },
+
+        genericSorter: function(a, b) {
+            if (a == b) {
+                return 0;
+            } else if (a < b) {
+                return -1;
+            } else {
+                return 1;
+            }
+        },
+        
+        parseDate: function(d) {
+            return Date.parse(d);
         },
 
         bugSearchQueue: 0,

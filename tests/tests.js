@@ -124,3 +124,19 @@ test('LocalStore get twice', function() {
         });
     });
 });
+
+test('genericSorter', function() {
+    equals(app.genericSorter(100, 100), 0, "100 == 100");
+    equals(app.genericSorter(50, 50), 0, "50 == 50");
+    equals(app.genericSorter(50, 100), -1, "50 < 100");
+    equals(app.genericSorter(100, 50), 1, "100 > 50");
+});
+
+test('dateSorter', function() {
+    var sooner = '2001-01-15T01:23:45Z',
+        later = '2011-11-30T12:34:56Z';
+    equals(app.dateSorter(sooner, sooner), 0, "sooner == sooner");
+    equals(app.dateSorter(later, later), 0, "sooner == sooner");
+    equals(app.dateSorter(sooner, later), -1, "sooner < later");
+    equals(app.dateSorter(later, sooner), 1, "later > sooner");
+});
