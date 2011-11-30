@@ -140,3 +140,27 @@ test('dateSorter', function() {
     equals(app.dateSorter(sooner, later), -1, "sooner < later");
     equals(app.dateSorter(later, sooner), 1, "later > sooner");
 });
+
+
+test('commentLinks', function() {
+    var data = [
+        [
+            'just some text',
+            'just some text'
+        ],
+        [
+            'talk about bug 12345 and stuff',
+            'talk about <a href="#bug12345">bug 12345</a> and stuff'
+        ],
+        [
+            'talk about bug 12345 and bug 5678 and stuff',
+            'talk about <a href="#bug12345">bug 12345</a> and <a href="#bug5678">bug 5678</a> and stuff'
+        ]
+    ];
+    expect(data.length);
+    
+    for (var i = 0; i < data.length; i++) {
+        equals(app.commentLinks(data[i][0]), data[i][1]);
+    }
+
+});

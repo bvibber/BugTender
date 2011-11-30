@@ -320,10 +320,18 @@
             ).find('.snippet').text(snippet).end()
             .find('.author').text(comment.author).end()
             .find('.time').text(comment.time).end()
-            .find('.text').text(comment.text).end()
+            .find('.text').html(app.commentLinks(comment.text)).end()
             .collapsible();
         },
         
+        /**
+         * @param {String} text plaintext input
+         * @return {String} html formatted
+         */
+        commentLinks: function(text) {
+            return text;
+        },
+
         /**
          * Format an attractive timestamp, with precision depending on
          * distance to current time.
