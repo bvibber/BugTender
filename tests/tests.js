@@ -153,6 +153,10 @@ test('commentLinks', function() {
             'talk about <a href="#bug12345">bug 12345</a> and stuff'
         ],
         [
+            'talk about Bug 12345 and stuff',
+            'talk about <a href="#bug12345">Bug 12345</a> and stuff'
+        ],
+        [
             'talk about bug 12345 and bug 5678 and stuff',
             'talk about <a href="#bug12345">bug 12345</a> and <a href="#bug5678">bug 5678</a> and stuff'
         ]

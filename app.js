@@ -329,6 +329,7 @@
          * @return {String} html formatted
          */
         commentLinks: function(text) {
+            text = text.replace(/\b(bug (\d+))\b/ig, '<a href="#bug$2">$1</a>');
             return text;
         },
 
