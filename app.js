@@ -395,6 +395,12 @@
                 $('#buglist .bugsearch').bind('change keyup cut paste', function(event) {
                     app.updateBugList();
                 });
+                $('#search-form').submit(function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    $('#bugsearch').blur(); // Close software keyboard?
+                    app.updateBugList();
+                });
             });
             $('#search-options').live('pageinit', function() {
                 $('#search-options input').change(function() {

@@ -25,16 +25,18 @@
 
         <div id="buglist" data-role="page">
             <div data-role="header">
-                <table style="width:100%; margin: 4px">
-                    <tr>
-                        <td>
-                            <input id="bugsearch" class="bugsearch" type="search" value="" placeholder="Search bugs" data-theme="c" />
-                        </td>
-                        <td>
-                            <a href="#search-options" data-role="button" data-icon="gear" data-transition="slidedown">Options</a>
-                        </td>
-                    </tr>
-                </table>
+                <form id="search-form">
+                    <table style="width:100%; margin: 4px">
+                        <tr>
+                            <td>
+                                <input id="bugsearch" class="bugsearch" type="search" value="" placeholder="Search bugs" data-theme="c" />
+                            </td>
+                            <td>
+                                <a href="#search-options" data-role="button" data-icon="gear" data-transition="slidedown">Options</a>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
             </div>
             <div id="view" data-role="content">
                 <ul data-role="listview">
