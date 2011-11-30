@@ -337,6 +337,53 @@
             }
         },
 
+        updateBugList: function() {
+            var $search = $('#bugsearch'),
+                terms = $.trim($search.val());
+            
+            if (app.bugSearchTimeout === undefined) {
+                // Wait a fraction of a second, more keystrokes may be coming
+                app.bugSearchTimeout = window.setTimeout(function() {
+                    app.bugSearchTimeout = undefined;
+                    var queue = ++app.bugSearchQueue,
+                        byId = {bugs: []},
+                        bySummary = {bugs: []},
+                        resolution = app.getSelectedResolutions();
+    
+                    if (terms.match(/^\d+$/)) {
+                        var bugId = parseInt(terms);
+                        byId = app.bz.call('Bug.search', {
+                            id: bugId
+                        });
+                    }
+                    if (terms.length) {
+                        bySummary = app.bz.call('Bug.search', {
+                            summary: terms,
+                            limit: 50,
+                            resolution: resolution
+                        });
+                    }
+                    
+                    $.when(byId, bySummary)
+                    .then(function(idResult, termsResult) {
+                        if (app.bugSearchQueue == queue) {
+                            var bugs = [].concat(idResult.bugs).concat(termsResult.bugs);
+
+                            // Remember these bugs for later
+                            var map = {};
+                            $.each(bugs, function(i, bug) {
+                                map[bug.id] = bug;
+                            });
+                            app.cache.remember('bug', map);
+                            app.showBugs(bugs);
+                        } else {
+                            // @fixme save for later anyway?
+                        }
+                    });
+                }, 250);
+            }
+        },
+
         bugSearchQueue: 0,
 
         init: function() {
@@ -346,50 +393,12 @@
             /** Set up initializers for each page type */
             $('#buglist').live('pageinit', function() {
                 $('#buglist .bugsearch').bind('change keyup cut paste', function(event) {
-                    var $search = $(this),
-                        terms = $.trim($search.val());
-                    
-                    if (app.bugSearchTimeout === undefined) {
-                        // Wait a fraction of a second, more keystrokes may be coming
-                        app.bugSearchTimeout = window.setTimeout(function() {
-                            app.bugSearchTimeout = undefined;
-                            var queue = ++app.bugSearchQueue,
-                                byId = {bugs: []},
-                                bySummary = {bugs: []},
-                                resolution = app.getSelectedResolutions();
-            
-                            if (terms.match(/^\d+$/)) {
-                                var bugId = parseInt(terms);
-                                byId = app.bz.call('Bug.search', {
-                                    id: bugId
-                                });
-                            }
-                            if (terms.length) {
-                                bySummary = app.bz.call('Bug.search', {
-                                    summary: terms,
-                                    limit: 50,
-                                    resolution: resolution
-                                });
-                            }
-                            
-                            $.when(byId, bySummary)
-                            .then(function(idResult, termsResult) {
-                                if (app.bugSearchQueue == queue) {
-                                    var bugs = [].concat(idResult.bugs).concat(termsResult.bugs);
-
-                                    // Remember these bugs for later
-                                    var map = {};
-                                    $.each(bugs, function(i, bug) {
-                                        map[bug.id] = bug;
-                                    });
-                                    app.cache.remember('bug', map);
-                                    app.showBugs(bugs);
-                                } else {
-                                    // @fixme save for later anyway?
-                                }
-                            });
-                        }, 250);
-                    }
+                    app.updateBugList();
+                });
+            });
+            $('#search-options').live('pageinit', function() {
+                $('input[name=adv-state]').change(function() {
+                    app.updateBugList();
                 });
             });
             $('.bug-page').live('pageinit', function() {
