@@ -163,6 +163,18 @@ test('commentLinks', function() {
         [
             'talk about bug 12345 and bug 5678 and stuff',
             'talk about <a href="#bug12345">bug 12345</a> and <a href="#bug5678">bug 5678</a> and stuff'
+        ],
+        [
+            'some http://example.com/ links',
+            'some <a href="http://example.com/">http://example.com/</a> links',
+        ],
+        [
+            'some http://example.com/ links to http://the.web.com/',
+            'some <a href="http://example.com/">http://example.com/</a> links to <a href="http://the.web.com/">http://the.web.com/</a>',
+        ],
+        [
+            'an <http://example.com/> link in angle brackets',
+            'an &lt;<a href="http://example.com/">http://example.com/</a>&gt; link in angle brackets',
         ]
     ];
     expect(data.length);
