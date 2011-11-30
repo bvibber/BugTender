@@ -4,6 +4,7 @@
 
 .comments .text {
     white-space: pre-wrap;
+    white-space: pre-line; /* breaks long URLs and such */
 }
 
 .severity-normal a {
