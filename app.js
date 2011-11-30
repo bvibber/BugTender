@@ -394,10 +394,11 @@
         bugSortFunction: function() {
             var sortField = $('input[name=adv-sort]:checked').val();
             var sortMap = {
+                id: app.genericSorter,
                 creation_time: app.dateSorter,
                 last_change_time: app.dateSorter,
-                priority: app.prioritySorter,
-                resolution: app.resolutionSorter
+                priority: app.genericSorter,
+                resolution: app.genericSorter
             };
             if (!(sortField in sortMap)) {
                 throw new Error("Unsupported sort field: " + sortField);
