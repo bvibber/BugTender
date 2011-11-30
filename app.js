@@ -332,7 +332,7 @@
             text = text.replace(/&/g, '&amp;');
             text = text.replace(/</g, '&lt;');
             text = text.replace(/>/g, '&gt;');
-            text = text.replace(/\b((?:http|https|ftp|ftps|mailto):(?:\/\/)?(?:[^<>\s"&]|&amp;)+)/g, '<a href="$1">$1</a>');
+            text = text.replace(/\b((?:http|https|ftp|ftps|mailto):(?:\/\/)?(?:[^<>\s"&]|&amp;)+)/g, '<a href="$1" target="_blank">$1</a>');
             text = text.replace(/\b(bug (\d+))\b/ig, '<a href="#bug$2">$1</a>');
             return text;
         },

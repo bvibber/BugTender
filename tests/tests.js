@@ -166,15 +166,15 @@ test('commentLinks', function() {
         ],
         [
             'some http://example.com/ links',
-            'some <a href="http://example.com/">http://example.com/</a> links',
+            'some <a href="http://example.com/" target="_blank">http://example.com/</a> links',
         ],
         [
             'some http://example.com/ links to http://the.web.com/',
-            'some <a href="http://example.com/">http://example.com/</a> links to <a href="http://the.web.com/">http://the.web.com/</a>',
+            'some <a href="http://example.com/" target="_blank">http://example.com/</a> links to <a href="http://the.web.com/" target="_blank">http://the.web.com/</a>',
         ],
         [
             'an <http://example.com/> link in angle brackets',
-            'an &lt;<a href="http://example.com/">http://example.com/</a>&gt; link in angle brackets',
+            'an &lt;<a href="http://example.com/" target="_blank">http://example.com/</a>&gt; link in angle brackets',
         ]
     ];
     expect(data.length);
