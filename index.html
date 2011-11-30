@@ -51,6 +51,22 @@
             </div>
             <div data-role="content">
                 <div data-role="fieldcontain">
+                    <label>Sort</label>
+                    <fieldset data-role="controlgroup">
+                        <label for="adv-sort-created">Created date</label>
+                        <input type="radio" name="adv-sort" id="adv-sort-created" value="creation_time" checked>
+
+                        <label for="adv-sort-last_change_time">Changed date</label>
+                        <input type="radio" name="adv-sort" id="adv-sort-last_change_time" value="last_change_time">
+
+                        <label for="adv-sort-priority">Priority</label>
+                        <input type="radio" name="adv-sort" id="adv-sort-priority" value="sort-priority">
+
+                        <label for="adv-sort-resolution">Resolution</label>
+                        <input type="radio" name="adv-sort" id="adv-sort-resolution" value="resolution">
+                    </fieldset>
+                </div>
+                <div data-role="fieldcontain">
                     <label>State</label>
                     <fieldset data-role="controlgroup" data-type="horizontal">
                         <label for="adv-state-open">Open</label>
