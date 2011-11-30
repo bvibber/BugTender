@@ -24,26 +24,32 @@
         </div>
 
         <div id="buglist" data-role="page">
+            <form id="search-form">
             <div data-role="header">
-                <a href="#index" data-rel="back">&lt; Home</a>
-                <h1>Bug list</h1>
+                <table style="width:100%; margin: 4px">
+                    <tr>
+                        <td>
+                            <input id="bugsearch" class="bugsearch" type="search" value="" placeholder="Search bugs" data-theme="c" />
+                        </td>
+                        <td>
+                            <a href="#options" data-role="button" data-icon="gear" data-iconpos="notext">Options</a>
+                        </td>
+                    </tr>
+                </table>
             </div>
             <div id="view" data-role="content">
-                <p>
-                    <input class="bugsearch" type="search" value="" placeholder="Search bugs" />
-                </p>
                 <div data-role="collapsible">
                     <h3>Advanced options...</h3>
                     <div>
                         stuff!
                     </div>
                 </div>
-                <ul data-role="listview">
-                </ul>
+                <div data-role="fieldcontain" class="ui-hide-label">
+                    <ul data-role="listview">
+                    </ul>
+                </div>
             </div>
-            <div data-role="footer" >
-                <h4>bottom bar</h4>
-            </div>
+            </form>
         </div>
 
         <div id="bug-template" class="bug-page" data-role="page">
