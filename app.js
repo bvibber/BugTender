@@ -268,6 +268,9 @@
                         .end()
                     .find('.status')
                         .text(bug.status)
+                        .end()
+                    .find('.resolution')
+                        .text(bug.resolution)
                         .end();
             });
             
