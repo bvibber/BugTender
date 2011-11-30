@@ -397,7 +397,7 @@
                 });
             });
             $('#search-options').live('pageinit', function() {
-                $('input[name=adv-state]').change(function() {
+                $('#search-options input').change(function() {
                     app.updateBugList();
                 });
             });
