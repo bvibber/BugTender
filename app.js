@@ -152,13 +152,37 @@
         },
 
         buildBugRow: function(bug) {
-            var $li = $('<li>'),
-                $a = $('<a>').attr('href', '#bug' + bug.id).appendTo($li);
-            $a.text(bug.id + ' ' + bug.summary);
-            $li.addClass('status-' + bug.status.toLowerCase());
-            $li.addClass('priority-' + bug.priority.toLowerCase());
-            $li.addClass('severity-' + bug.severity.toLowerCase());
-            return $li;
+            var $li = $('<li>' +
+                          '<a>' +
+                            '<p class="ui-li-aside ui-li-desc"></p>' +
+                            '<h3 class="ui-li-heading"></h3>' +
+                          '</a>' +
+                        '</li>');
+            return $li
+                .find('a')
+                    .attr('href', '#bug' + bug.id)
+                    .end()
+                .find('p')
+                    .text(app.formatShortField(bug, app.sortField()))
+                    .end()
+                .find('h3')
+                    .text(bug.summary)
+                    .addClass('status-' + bug.status.toLowerCase())
+                    .addClass('priority-' + bug.priority.toLowerCase())
+                    .addClass('severity-' + bug.severity.toLowerCase())
+                    .end();
+        },
+
+        formatShortField: function(bug, field) {
+            if (!(field in bug)) {
+                throw new Error("Asked for non-present field: " + field);
+            }
+            var val = bug[field];
+            if (field == 'creation_time' || field == 'last_change_time') {
+                return app.prettyTimestamp(val);
+            }
+
+            return val + '';
         },
 
         showBugView: function(id) {
@@ -304,16 +328,18 @@
          * @param {String} ts
          * @return String
          */
-        prettyTimestamp: function(ts) {
-            var date = new Date(Date.parse(ts)), // ??
-                now = new Date(),
-                interval = now.getTime() - date.getTime();
+        prettyTimestamp: function(ts, origin) {
+            var date = new Date(app.parseDate(ts)),
+                now = origin || new Date(),
+                interval = (now.getTime() - date.getTime()) / 1000;
             if (interval < 30) {
                 return 'just now';
             } else if (interval < 3600) {
-                return Math.round(interval / 60) = ' minutes ago';
+                return Math.round(interval / 60) + ' minutes ago';
             } else if (interval < 86400) {
-                return Math.round(interval / 3600) = ' hours ago';
+                return Math.round(interval / 3600) + ' hours ago';
+            } else if (interval < 86400 * 31) {
+                return Math.round(interval / 86400) + ' days ago';
             } else {
                 return date.toLocaleDateString();
             }
@@ -391,8 +417,12 @@
             });
         },
 
+        sortField: function() {
+            return $('input[name=adv-sort]:checked').val();
+        },
+
         bugSortFunction: function() {
-            var sortField = $('input[name=adv-sort]:checked').val();
+            var sortField = app.sortField();
             var sortMap = {
                 id: app.genericSorter,
                 creation_time: app.dateSorter,
