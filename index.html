@@ -24,7 +24,6 @@
         </div>
 
         <div id="buglist" data-role="page">
-            <form id="search-form">
             <div data-role="header">
                 <table style="width:100%; margin: 4px">
                     <tr>
@@ -32,24 +31,45 @@
                             <input id="bugsearch" class="bugsearch" type="search" value="" placeholder="Search bugs" data-theme="c" />
                         </td>
                         <td>
-                            <a href="#options" data-role="button" data-icon="gear" data-iconpos="notext">Options</a>
+                            <a href="#search-options" data-role="button" data-icon="gear" data-transition="slidedown">Options</a>
                         </td>
                     </tr>
                 </table>
             </div>
             <div id="view" data-role="content">
-                <div data-role="collapsible">
-                    <h3>Advanced options...</h3>
-                    <div>
-                        stuff!
-                    </div>
+                <ul data-role="listview">
+                </ul>
+            </div>
+        </div>
+
+        <div id="search-options" data-role="page">
+            <div data-role="header">
+                <h1>Search Options</h1>
+                <a href="#buglist"  data-transition="slideup" data-rel="back" class="ui-btn-right" data-theme="b">Done</a>
+            </div>
+            <div data-role="content">
+                <div data-role="fieldcontain">
+                    <label>State</label>
+                    <fieldset data-role="controlgroup" data-type="horizontal">
+                        <label for="adv-state-open">Open</label>
+                        <input type="radio" name="adv-state" id="adv-state-open" value="open" checked>
+                        <label for="adv-state-fixed">Fixed</label>
+                        <input type="radio" name="adv-state" id="adv-state-fixed" value="fixed">
+                        <label for="adv-state-rejected">Rejected</label>
+                        <input type="radio" name="adv-state" id="adv-state-rejected" value="rejected">
+                    </fieldset>
                 </div>
-                <div data-role="fieldcontain" class="ui-hide-label">
-                    <ul data-role="listview">
-                    </ul>
+                <div data-role="fieldcontain">
+                    <label id="adv-product">Products</label>
+                    <select name="adv-product" id="adv-product" data-native-menu="false" multiple>
+                        <option value="demo1">item 1</option>
+                        <option value="demo2">item 2</option>
+                        <option value="demo3">item 3</option>
+                        <option value="demo4">item 4</option>
+                        <option value="demo5">item 5</option>
+                    </select>
                 </div>
             </div>
-            </form>
         </div>
 
         <div id="bug-template" class="bug-page" data-role="page">
