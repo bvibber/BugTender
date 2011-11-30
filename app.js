@@ -318,7 +318,25 @@
                 return date.toLocaleDateString();
             }
         },
-        
+
+        /**
+         * Get Bugzilla resolution options matching our selected states.
+         *
+         * @return Array of strings
+         */
+        getSelectedResolutions: function() {
+            var state = $('input[name=adv-state]:checked').val();
+            if (state == 'open') {
+                return ['', 'REOPENED', 'LATER'];
+            } else if (state == 'fixed') {
+                return ['FIXED'];
+            } else if (state == 'rejected') {
+                return ['INVALID', 'WONTFIX', 'DUPLICATE', 'WORKSFORME'];
+            } else {
+                throw new Error("Unrecognized state " + state);
+            }
+        },
+
         bugSearchQueue: 0,
 
         init: function() {
@@ -337,7 +355,8 @@
                             app.bugSearchTimeout = undefined;
                             var queue = ++app.bugSearchQueue,
                                 byId = {bugs: []},
-                                bySummary = {bugs: []};
+                                bySummary = {bugs: []},
+                                resolution = app.getSelectedResolutions();
             
                             if (terms.match(/^\d+$/)) {
                                 var bugId = parseInt(terms);
@@ -348,7 +367,8 @@
                             if (terms.length) {
                                 bySummary = app.bz.call('Bug.search', {
                                     summary: terms,
-                                    limit: 50
+                                    limit: 50,
+                                    resolution: resolution
                                 });
                             }
                             
