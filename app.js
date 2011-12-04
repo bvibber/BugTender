@@ -432,6 +432,14 @@
             if (terms.length) {
                 options.summary = terms;
             }
+
+            $products = $('#adv-product option:selected');
+            if ($products.length > 0) {
+                options.product = $.map($products, function(option) {
+                    return [$(option).text()];
+                });
+            }
+
             bySummary = app.bz.call('Bug.search', options);
             
             $.when(byId, bySummary)
