@@ -21,7 +21,7 @@
                     data: JSON.stringify({
                         version: '1.0',
                         method: method,
-                        params: params
+                        params: params || {}
                     })
                 }).then(function(data) {
                     if ('error' in data && data.error !== null) {
@@ -33,6 +33,26 @@
                     }
                 }).fail(function(xhr, err) {
                     deferred.reject(err);
+                });
+            }).promise();
+        };
+        
+        /**
+         * Resolves with a map containing 'products' array of maps
+         * @return promise
+         */
+        this.getSelectableProducts = function() {
+            return $.Deferred(function(deferred) {
+                that.call('Product.get_selectable_products')
+                .then(function(result) {
+                    that.call('Product.get', {ids: result.ids})
+                    .then(function(result) {
+                        deferred.resolve(result);
+                    }).fail(function(err) {
+                        deferred.reject(err);
+                    });
+                }).fail(function(err) {
+                    deferred.reject(err)
                 });
             }).promise();
         };
@@ -103,6 +123,7 @@
             $.extend(stored[kind], map);
         };
     }
+
 
 (function($) {
 
@@ -470,7 +491,11 @@
                 return 1;
             }
         },
-        
+
+        nameSorter: function(a, b) {
+            return app.genericSorter(a.name.toUpperCase(), b.name.toUpperCase());
+        },
+
         parseDate: function(d) {
             return Date.parse(d);
         },
@@ -497,6 +522,7 @@
                 $('#search-options input').change(function() {
                     app.updateBugList();
                 });
+                app.refreshProductSelection();
             });
             $('.bug-page').live('pageinit', function() {
                 app.initBugView($(this));
@@ -541,6 +567,28 @@
                 console.log('auth canceled');
             });
             */
+        },
+
+        /**
+         * @fixme cache
+         * @fixme refresh without removing selections
+         */
+        refreshProductSelection: function() {
+            app.bz.getSelectableProducts()
+            .then(function(result) {
+                var $select = $('#adv-product');
+                $select.empty();
+
+                var products = result.products;
+                products.sort(app.nameSorter);
+                $.each(products, function(i, product) {
+                    $('<option>')
+                        .attr('value', product.id)
+                        .text(product.name)
+                        .appendTo($select);
+                });
+                $select.selectmenu('refresh');
+            });
         }
     };
 
