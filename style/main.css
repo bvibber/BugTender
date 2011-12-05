@@ -31,3 +31,18 @@
 .status-resolved a {
     color: gray !important;
 }
+
+.comment-spinner {
+    padding-left: 40px;
+    background: url(spinner-mdpi.gif) no-repeat 10px center;
+    background-size: 16px 16px;
+    display: none;
+}
+
+
+
+@media screen and (-webkit-device-pixel-ratio: 2.0) {
+    .comment-spinner {
+        background-image: url(spinner-xhdpi.gif) !important;
+    }
+}

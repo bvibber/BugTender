@@ -335,6 +335,52 @@
                 });
                 $comments.listview('refresh');
             });
+
+            var $addButton = $view.find('.comment-add'),
+                $input = $view.find('.comment-input'),
+                $postingSpinner = $view.find('.comment-spinner');
+            $addButton.click(function() {
+                // Avoid double submissions :)
+                function lockForm() {
+                    $input.attr('disabled', 'disabled');
+                    $addButton.hide();
+                    $postingSpinner.show();
+                }
+                function cleanForm() {
+                    $postingSpinner.hide();
+                    $addButton.show();
+                    $input.removeAttr('disabled');
+                }
+                lockForm();
+
+                // Prompt for authentication if we don't already have it.
+                app.authenticate().then(function(auth) {
+                    app.bz.call('Bug.add_comment', {
+                        id: id,
+                        comment: $input.val(),
+                        Bugzilla_login: auth.user,
+                        Bugzilla_password: auth.pass
+                    }).then(function(result) {
+                        // It comes back with our id number like: {"id":158459}}
+                        // so we can load the comment fresh
+                        $input.val('');
+                        cleanForm();
+
+                        app.bz.call('Bug.comments', {'comments': [result.id]})
+                        .then(function() {
+                            app.renderCommentInList(comment).appendTo($comments);
+                        });
+
+                    }).fail(function() {
+                        // Posting failed... let them try again.
+                        cleanForm();
+                    });
+                }).fail(function() {
+                    // Auth was canceled. Return to previous state.
+                    cleanForm();
+                });
+            });
+
         },
 
         /**
@@ -634,27 +680,6 @@
                     $.mobile.changePage(document.location.hash);
                 }
             });
-    
-            /*
-            var user = prompt('Username?'),
-                pass = prompt('Password?');
-            */
-            /*
-            app.authenticate().then(function(auth) {
-                app.bz.call('Bug.add_comment', {
-                    id: bug.id,
-                    comment: 'Just testing Bugzilla tools (not the spammer)',
-                    Bugzilla_login: auth.user,
-                    Bugzilla_password: auth.pass
-                }).then(function(result) {
-                    $('#view').empty().text(JSON.stringify(result));
-                }).fail(function() {
-                    console.log('hit failed');
-                });
-            }).fail(function() {
-                console.log('auth canceled');
-            });
-            */
         },
 
         /**
@@ -677,7 +702,7 @@
                 });
                 $select.selectmenu('refresh');
             });
-        }
+        },
     };
 
 })(jQuery);
