@@ -103,10 +103,10 @@
             </div>
         </div>
 
-        <div id="bug-template" class="bug-page" data-role="page">
+        <div id="details-template" class="details-page" data-role="page">
             <div data-role="header">
                 <a href="#" data-rel="back">&lt; Back</a>
-                <h1>Bug #</h1>
+                <h1>Bug # details</h1>
             </div>
             <div data-role="content" class="view">
                 <h2 class="summary"></h2>
@@ -119,12 +119,7 @@
                     <li>Assigned: <span class="assigned">...</span></li>
                     <li>Keywords: <span class="keywords">...</span></li>
                     <li><a href="#deps$1" class="deps">Dependencies <span class="deps-count ui-li-count">?</span></a></li>
-                    <li><a href="#comments$1" class="comments">Comments <span class="comments-count ui-li-count">?</span></a></li>
                 </ul>
-                
-            </div>
-            <div data-role="footer" >
-                <h4>bottom bar</h4>
             </div>
         </div>
 
@@ -143,21 +138,33 @@
             </div>
         </div>
 
-        <div id="comments-template" class="comments-page" data-role="page">
+        <div id="bug-template" class="bug-page" data-role="page">
             <div data-role="header">
                 <a href="#" data-rel="back">&lt; Back</a>
                 <h1>
-                    Comments
-                    <!-- <input type="search" name="password" id="search" value="" placeholder="Comment search" data-theme="c" /> -->
+                    Bug $1
                 </h1>
             </div>
             <div class="comments" data-role="content">
-                <ul data-role="listview">
-                    <li>Loading...</li>
+                <h3 class="summary"></h3>
+                <ul class="nav-list" data-role="listview">
+                    <li><a href="#details$1" class="details">Bug details</a></li>
                 </ul>
-            </div>
-            <div data-role="footer" >
-                <a data-role="button">Add comment</a>
+
+                <div data-role="fieldcontain">
+                    <label for="comment-search">Comment search</label>
+                    <input type="search" name="password" id="comment-search" value="" placeholder="Search comments" data-theme="c" />
+                </div>
+
+                <div class="comments-list">
+                    <ul data-role="listview">
+                        <li>Loading comments...</li>
+                    </ul>
+                </div>
+                
+                <div data-role="fieldcontain">
+                    <a data-role="button">Add comment</a>
+                </div>
             </div>
         </div>
 

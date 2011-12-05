@@ -243,7 +243,7 @@
                 }
             }
             route(/#bug(\d+)$/, '#bug-template');
-            route(/#comments(\d+)$/, '#comments-template');
+            route(/#details(\d+)$/, '#details-template');
             route(/#deps(\d+)$/, '#deps-template');
             /*
             route(/#buglist$/, function() {
@@ -268,14 +268,11 @@
             return parseInt(matches[1]);
         },
 
-        initBugView: function($view) {
+        initDetailView: function($view) {
             var id = app.extractId($view);
             $view
                 .find('h1')
-                    .text('Bug $1'.replace('$1', id + ''))
-                    .end()
-                .find('a.comments')
-                    .attr('href', '#comments' + id)
+                    .text('Bug $1 details'.replace('$1', id + ''))
                     .end()
                 .find('a.deps')
                     .attr('href', '#deps' + id)
@@ -301,26 +298,33 @@
                         .text(bug.resolution)
                         .end();
             });
-            
-            // Load comments separately.
-            // @todo load comments in chunks?
-            app.bz.call('Bug.comments', {
-                ids: [id]
-            }).then(function(result) {
-                var comments = result.bugs[id].comments;
-                $view.find('.comments-count').text(comments.length + '');
-                //app.recordSeenComments(id, comments);
-            });
         },
 
         initDepsView: function($view) {
             var id = app.extractId($view);
         },
 
-        initCommentsView: function($view) {
+        initBugView: function($view) {
             var id = app.extractId($view),
-                $comments = $view.find('.comments');
-            // @todo we've probably already got these; use saved ones
+                $comments = $view.find('.comments-list');
+
+            $view
+                .find('h1')
+                    .text('Bug $1'.replace('$1', id + ''))
+                    .end()
+                .find('a.details')
+                    .attr('href', '#details' + id)
+                    .end();
+
+            // get basic info
+            app.cache.get('bug', id)
+            .then(function(bugs) {
+                var bug = bugs[id];
+                $view
+                    .find('.summary').text(bug.summary).end();
+            });
+
+            // @todo cache these too
             app.bz.call('Bug.comments', {
                 ids: [id]
             }).then(function(result) {
@@ -611,8 +615,8 @@
             $('.bug-page').live('pageinit', function() {
                 app.initBugView($(this));
             });
-            $('.comments-page').live('pageinit', function() {
-                app.initCommentsView($(this));
+            $('.details-page').live('pageinit', function() {
+                app.initDetailView($(this));
             });
             $('.deps-page').live('pageinit', function() {
                 app.initDepsView($(this));
