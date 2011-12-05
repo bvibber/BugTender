@@ -51,6 +51,21 @@
             </div>
             <div data-role="content">
                 <div data-role="fieldcontain">
+                    <label>Show</label>
+                    <fieldset data-role="controlgroup" data-type="horizontal">
+                        <label for="adv-show-new">New</label>
+                        <input type="radio" name="adv-show" id="adv-show-new" value="new" checked>
+                        <label for="adv-show-changed">Changed</label>
+                        <input type="radio" name="adv-show" id="adv-show-changed" value="changed">
+                        <label for="adv-show-all">All</label>
+                        <input type="radio" name="adv-show" id="adv-show-all" value="all">
+                    </fieldset>
+                    <div id="adv-days-container">
+                        <label for="adv-days">In last N days</label>
+                        <input type="range" name="adv-days" id="adv-days" value="7" min="1" max="90">
+                    </div>
+                </div>
+                <div data-role="fieldcontain">
                     <label>Sort</label>
                     <fieldset data-role="controlgroup">
                         <label for="adv-sort-id">Bug id</label>

@@ -526,9 +526,15 @@
                     app.updateBugList();
                 });
             });
+            $('#buglist').live('pageshow', function() {
+                app.updateBugList();
+            });
             $('#search-options').live('pageinit', function() {
-                $('#search-options input').change(function() {
-                    app.updateBugList();
+                $('#adv-show-all').click(function() {
+                    $('#adv-days-container').hide();
+                });
+                $('#adv-show-new, #adv-show-changed').click(function() {
+                    $('#adv-days-container').show();
                 });
                 app.refreshProductSelection();
             });
