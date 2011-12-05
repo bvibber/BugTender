@@ -1,0 +1,39 @@
+CACHE MANIFEST
+#
+# To cache the app offline, this file must be served as text/cache-manifest
+#
+#     AddType text/cache-manifest .appcache
+#
+# Recommend also disabling caching on *the manifest* to ensure that it always
+# gets checked when you *are* online.
+#
+#     ExpiresByType text/cache-manifest "access plus 0 seconds"
+#
+
+
+# BugTender
+CACHE:
+index.html
+config.js
+app.js
+style/main.css
+style/spinner-mdpi.gif
+style/spinner-xhdpi.gif
+
+NETWORK:
+proxy.php
+*
+
+# jQuery
+CACHE:
+lib/jquery-1.7.1.js
+
+# jQuery mobile
+CACHE:
+lib/jquery.mobile-1.0.css
+lib/jquery.mobile-1.0.js
+lib/images/ajax-loader.png
+lib/images/icons-18-black.png
+lib/images/icons-18-white.png
+lib/images/icons-36-black.png
+lib/images/icons-36-white.png
