@@ -439,6 +439,15 @@
                     return [$(option).text()];
                 });
             }
+            
+            var showMode = $('#adv-show-container input:checked').val(),
+                lastDays = parseInt($('#adv-days').val()),
+                cutoff = app.bzDate(Date.now - lastDays * 24 * 3600 * 1000);
+            if (showMode == 'new') {
+                options.creation_time = cutoff;
+            } else if (showMode == 'changed') {
+                options.last_change_time = cutoff;
+            }
 
             bySummary = app.bz.call('Bug.search', options);
             
@@ -504,8 +513,49 @@
             return app.genericSorter(a.name.toUpperCase(), b.name.toUpperCase());
         },
 
+        /**
+         * @fixme doesn't work on some browsers
+         */
         parseDate: function(d) {
             return Date.parse(d);
+        },
+
+        padFunc: function(n) {
+            return function(s) {
+                if (typeof s !== 'string') {
+                    s = new String(s);
+                }
+                while (s.length < n) {
+                    s = '0' + s;
+                }
+                return s;
+            };
+        },
+
+        /**
+         * @param {number} ts in ms
+         */
+        bzDate: function(ts) {
+            var pad4 = app.padFunc(4),
+                pad2 = app.padFunc(2),
+                date;
+            if (ts instanceof Date) {
+                date = ts;
+            } else {
+                date = new Date(ts);
+            }
+            return pad4(date.getUTCFullYear()) +
+                '-' +
+                pad2(date.getUTCMonth() + 1) +
+                '-' +
+                pad2(date.getUTCDate()) +
+                'T' +
+                pad2(date.getUTCHours()) +
+                ':' +
+                pad2(date.getUTCMinutes()) +
+                ':' +
+                pad2(date.getUTCSeconds()) +
+                'Z';
         },
 
         bugSearchQueue: 0,

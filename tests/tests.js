@@ -184,3 +184,8 @@ test('commentLinks', function() {
     }
 
 });
+
+test('bzDate', function() {
+    var date = new Date('Mon, 25 Dec 1995 13:30:00 GMT');
+    equals(app.bzDate(date), '1995-12-25T13:30:00Z');
+});
