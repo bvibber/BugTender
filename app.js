@@ -175,16 +175,20 @@
         buildBugRow: function(bug) {
             var $li = $('<li>' +
                           '<a>' +
-                            '<p class="ui-li-aside ui-li-desc"></p>' +
                             '<h3 class="ui-li-heading"></h3>' +
+                            '<p class="ui-li-desc loc"></p>' +
+                            '<p class="ui-li-desc sort"></p>' +
                           '</a>' +
                         '</li>');
             return $li
                 .find('a')
                     .attr('href', '#bug' + bug.id)
                     .end()
-                .find('p')
-                    .text(app.formatShortField(bug, app.sortField()))
+                .find('.loc')
+                    .text(bug.product + ' - ' + bug.component)
+                    .end()
+                .find('.sort')
+                    .text(app.formatSortField(bug))
                     .end()
                 .find('h3')
                     .text(bug.summary)
@@ -194,16 +198,19 @@
                     .end();
         },
 
-        formatShortField: function(bug, field) {
+        formatSortField: function(bug) {
+            var field = app.sortField();
             if (!(field in bug)) {
                 throw new Error("Asked for non-present field: " + field);
             }
             var val = bug[field];
-            if (field == 'creation_time' || field == 'last_change_time') {
-                return app.prettyTimestamp(val);
+            if (field == 'creation_time') {
+                return 'Filed $1'.replace('$1', app.prettyTimestamp(val));
+            } else if (field == 'last_change_time') {
+                return 'Changed $1'.replace('$1', app.prettyTimestamp(val));
+            } else {
+                return val + '';
             }
-
-            return val + '';
         },
 
         showBugView: function(id) {
