@@ -441,8 +441,8 @@
             }
             
             var showMode = $('#adv-show-container input:checked').val(),
-                lastDays = parseInt($('#adv-days').val()),
-                cutoff = app.bzDate(Date.now - lastDays * 24 * 3600 * 1000);
+                days = parseInt($('#adv-days').val()),
+                cutoff = app.bzDate(app.daysAgo(days));
             if (showMode == 'new') {
                 options.creation_time = cutoff;
             } else if (showMode == 'changed') {
@@ -556,6 +556,19 @@
                 ':' +
                 pad2(date.getUTCSeconds()) +
                 'Z';
+        },
+
+        /**
+         * Return a Date instance corresponding to numDays days ago from now.
+         *
+         * @param {number} numDays
+         * @return Date
+         */
+        daysAgo: function(numDays) {
+            var now = Date.now(),
+                delta = numDays * 24 * 3600 * 1000,
+                then = now - delta;
+            return new Date(then);
         },
 
         bugSearchQueue: 0,

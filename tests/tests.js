@@ -189,3 +189,13 @@ test('bzDate', function() {
     var date = new Date('Mon, 25 Dec 1995 13:30:00 GMT');
     equals(app.bzDate(date), '1995-12-25T13:30:00Z');
 });
+
+test('daysAgo', function() {
+    var now = new Date(Date.now()),
+        one = app.daysAgo(1),
+        seven = app.daysAgo(7);
+
+    ok(one.getTime() < now.getTime(), 'one day ago is before now: ' + one);
+    ok(seven.getTime() < one.getTime(), 'seven days ago is before one day ago: ' + seven);
+
+});
