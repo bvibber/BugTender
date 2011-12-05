@@ -147,25 +147,24 @@
             </div>
             <div class="comments" data-role="content">
                 <h3 class="summary"></h3>
-                <ul class="nav-list" data-role="listview">
-                    <li><a href="#details$1" class="details">Bug details</a></li>
-                </ul>
-
                 <div data-role="fieldcontain">
-                    <label for="comment-search">Comment search</label>
-                    <input type="search" name="password" id="comment-search" value="" placeholder="Search comments" data-theme="c" />
-                </div>
-
-                <div class="comments-list">
-                    <ul data-role="listview">
-                        <li>Loading comments...</li>
+                    <ul class="nav-list" data-role="listview">
+                        <li><a href="#details$1" class="details">Bug details</a></li>
                     </ul>
                 </div>
+                <div class="comments-list">
+                    <div data-role="fieldcontain" class"ui-hide-label">
+                        <label for="comment-search">Comment search</label>
+                        <input type="search" name="password" id="comment-search" value="" placeholder="Search comments" data-theme="c" />
+                    </div>
+                </div>
+
+                <div class="comment-load-spinner spinner-line">Loading comments...</div>
                 
                 <div data-role="fieldcontain">
                     <textarea class="comment-input"></textarea>
                     <a data-role="button" class="comment-add">Add comment</a>
-                    <div class="comment-spinner">Posting comment...</div>
+                    <div class="comment-post-spinner spinner-line">Posting comment...</div>
                 </div>
             </div>
         </div>

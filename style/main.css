@@ -32,17 +32,23 @@
     color: gray !important;
 }
 
-.comment-spinner {
+.comments-list {
+    display: none; /* initial hide */
+}
+
+.comment-post-spinner {
+    display: none; /* initial hide */
+}
+
+.spinner-line {
     padding-left: 40px;
     background: url(spinner-mdpi.gif) no-repeat 10px center;
     background-size: 16px 16px;
-    display: none;
 }
 
 
-
 @media screen and (-webkit-device-pixel-ratio: 2.0) {
-    .comment-spinner {
+    .spinner-line {
         background-image: url(spinner-xhdpi.gif) !important;
     }
 }

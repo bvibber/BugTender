@@ -325,20 +325,23 @@
             });
 
             // @todo cache these too
+            var $loadingSpinner = $view.find('.comment-load-spinner');
+            $loadingSpinner.show();
             app.bz.call('Bug.comments', {
                 ids: [id]
             }).then(function(result) {
                 var comments = result.bugs[id].comments;
-                $comments.empty();
+                $comments.show();
                 $.each(comments, function(i, comment) {
                     app.renderCommentInList(comment).appendTo($comments);
                 });
+                $loadingSpinner.hide();
                 $comments.listview('refresh');
             });
 
             var $addButton = $view.find('.comment-add'),
                 $input = $view.find('.comment-input'),
-                $postingSpinner = $view.find('.comment-spinner');
+                $postingSpinner = $view.find('.comment-post-spinner');
             $addButton.click(function() {
                 // Avoid double submissions :)
                 function lockForm() {
