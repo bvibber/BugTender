@@ -672,17 +672,15 @@
             });
         
             /** Autocreate bug pages on demand */
-            $(function() {
-                $(document).bind('pagebeforechange', function(e, data) {
-                    if (typeof data.toPage === "string") {
-                        app.preinitPage(data.toPage);
-                    }
-                });
-                // hack? to get the initial 'page' to initialize after reloading or following a #link
-                if (document.location.hash !== '') {
-                    $.mobile.changePage(document.location.hash);
+            $(document).bind('pagebeforechange', function(e, data) {
+                if (typeof data.toPage === "string") {
+                    app.preinitPage(data.toPage);
                 }
             });
+            // hack? to get the initial 'page' to initialize after reloading or following a #link
+            if (document.location.hash !== '') {
+                app.preinitPage(document.location.hash);
+            }
         },
 
         /**
