@@ -10,7 +10,6 @@ CACHE MANIFEST
 #     ExpiresByType text/cache-manifest "access plus 0 seconds"
 #
 
-
 # BugTender
 CACHE:
 index.html

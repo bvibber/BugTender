@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html manifest="bugtender.appcache">
+<html>
     <head>
         <title>BugTender</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"> 
@@ -18,9 +18,53 @@
                 <h1>BugTender</h1>
             </div>
             <a href="#buglist" data-role="button">Bug list</a>
-            <div data-role="footer">
-                <h4>bottom bar</h4>
-            </div>
+            <a href="#newbug" data-role="button">New bug</a>
+        </div>
+
+        <div id="newbug" data-role="page">
+            <form id="newbug-form">
+                <div data-role="header">
+                    <a href="#" data-rel="back">&lt; Back</a>
+                    <h1>New bug</h1>
+                </div>
+                <div data-role="content">
+                    <div data-role="fieldcontain">
+                        <label for="new-product">Product</label>
+                        <select name="new-product" id="new-product" data-native-menu="false">
+                            <option>Loading...</option>
+                        </select>
+                    </div>
+                    <div id="new-fields">
+                        <div data-role="fieldcontain">
+                            <label for="new-summary">Summary</label>
+                            <input name="new-summary" id="new-summary">
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="new-description">Details</label>
+                            <textarea name="new-description" id="new-description"></textarea>
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="new-component">Component</label>
+                            <!--
+                            BZ 4.0 api doesn't seem to allow us to get these. WTF?
+                            <select name="new-component" id="new-component" data-native-menu="false">
+                            </select>
+                            -->
+                            <input name="new-component" id="new-component">
+                        </div>
+                        <div data-role="fieldcontain">
+                            <fieldset data-role="controlgroup">
+                                <legend>Security</legend>
+                                <input type="checkbox" name="new-private" id="new-private" class="custom">
+                                <label for="new-private">Keep bug report private</label>
+                            </fieldset>
+                        </div>
+                        <div>
+                            <a href="#newbug-save" data-role="button">Submit bug report</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <div id="buglist" data-role="page">

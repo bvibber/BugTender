@@ -659,7 +659,28 @@
                 $('#adv-show-new, #adv-show-changed').click(function() {
                     $('#adv-days-container').show();
                 });
-                app.refreshProductSelection();
+                app.refreshProductSelection('#adv-product');
+            });
+            $('#newbug').live('pageinit', function() {
+                $('#new-product').change(function() {
+                    var val = $(this).val();
+                    if (val == '') {
+                        $('#new-fields').slideUp();
+                    } else {
+                        $('#new-fields').slideDown();
+                        // BZ 4.0 api doesn't seem to provide this. wtf!?
+                        //app.refreshComponentSelection('#new-component', val);
+                    }
+                });
+            });
+            $('#newbug').live('pageshow', function() {
+                $('#new-product').val('');
+                $('#new-summary').val('');
+                $('#new-description').val('');
+                $('#new-component').empty();
+                $('#new-private').removeAttr('checked');
+                $('#new-fields').hide();
+                app.refreshProductSelection('#new-product', 'Select product');
             });
             $('.bug-page').live('pageinit', function() {
                 app.initBugView($(this));
@@ -687,14 +708,18 @@
          * @fixme cache
          * @fixme refresh without removing selections
          */
-        refreshProductSelection: function() {
+        refreshProductSelection: function(select, initial) {
             app.bz.getSelectableProducts()
             .then(function(result) {
-                var $select = $('#adv-product');
-                $select.empty();
+                var $select = $(select).empty();
 
                 var products = result.products;
                 products.sort(app.nameSorter);
+                if (initial !== undefined) {
+                    $('<option>')
+                        .text(initial)
+                        .appendTo($select);
+                }
                 $.each(products, function(i, product) {
                     $('<option>')
                         .attr('value', product.id)
@@ -703,7 +728,7 @@
                 });
                 $select.selectmenu('refresh');
             });
-        },
+        }
     };
 
 })(jQuery);
