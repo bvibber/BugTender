@@ -52,7 +52,7 @@
                         deferred.reject(err);
                     });
                 }).fail(function(err) {
-                    deferred.reject(err)
+                    deferred.reject(err);
                 });
             }).promise();
         };
@@ -218,7 +218,7 @@
             
                 if (typeof id !== 'number'
                     || id <= 0
-                    || id !== parseInt(id + '')) {
+                    || id !== parseInt(id + '', 10)) {
                     deferred.reject('Invalid bug id');
                     return;
                 }
@@ -233,7 +233,7 @@
                 if (matches) {
                     var $view = $(matches[0]);
                     if (template) {
-                        if ($view.length == 0) {
+                        if ($view.length === 0) {
                             // Haven't seen this page yet; create a view for it
                             $view = $(template).clone()
                                 .attr('id', matches[0].substr(1))
@@ -241,7 +241,7 @@
                         }
                     }
                 }
-            }
+            };
             route(/#bug(\d+)$/, '#bug-template');
             route(/#details(\d+)$/, '#details-template');
             route(/#deps(\d+)$/, '#deps-template');
@@ -265,7 +265,7 @@
             if (!matches) {
                 throw new Error("element id format is not valid for extractId");
             }
-            return parseInt(matches[1]);
+            return parseInt(matches[1], 10);
         },
 
         initDetailView: function($view) {
@@ -480,7 +480,7 @@
                 resolution = app.getSelectedResolutions();
 
             if (terms.match(/^\d+$/)) {
-                var bugId = parseInt(terms);
+                var bugId = parseInt(terms, 10);
                 byId = app.bz.call('Bug.search', {
                     id: bugId
                 });
@@ -501,7 +501,7 @@
             }
             
             var showMode = $('#adv-show-container input:checked').val(),
-                days = parseInt($('#adv-days').val()),
+                days = parseInt($('#adv-days').val(), 10),
                 cutoff = app.bzDate(app.daysAgo(days));
             if (showMode == 'new') {
                 options.creation_time = cutoff;
@@ -664,7 +664,7 @@
             $('#newbug').live('pageinit', function() {
                 $('#new-product').change(function() {
                     var val = $(this).val();
-                    if (val == '') {
+                    if (val === '') {
                         $('#new-fields').slideUp();
                     } else {
                         $('#new-fields').slideDown();
