@@ -16,7 +16,9 @@ if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST')
     die('Invalid method; only POST accepted');
 }
 
-if (!isset($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] !== 'application/json; charset=UTF-8') {
+$allowedContentType = 'application/json; charset=UTF-8';
+
+if (!isset($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] !== $allowedContentType) {
     header('HTTP/1.x 400 Bad Request');
     die('Invalid Content-Type: ' . htmlspecialchars($_SERVER['CONTENT_TYPE']));
 }
@@ -27,7 +29,7 @@ $context = stream_context_create(
         'http' => array(
             'method' => 'POST',
             'content' => $data,
-            'header' => "Content-Type: $type\r\n",
+            'header' => "Content-Type: $allowedContentType\r\n",
         )
     )
 );
