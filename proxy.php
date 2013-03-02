@@ -16,11 +16,12 @@ if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST')
     die('Invalid method; only POST accepted');
 }
 
-if (!isset($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] !== 'application/json; charset=UTF-8') {
+if (!isset($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] !== 'application/json-rpc') {
     header('HTTP/1.x 400 Bad Request');
     die('Invalid Content-Type: ' . htmlspecialchars($_SERVER['CONTENT_TYPE']));
 }
 
+$type = $_SERVER['CONTENT_TYPE'];
 $data = file_get_contents('php://input');
 $context = stream_context_create(
     array(

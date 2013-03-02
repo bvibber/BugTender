@@ -17,7 +17,7 @@
                 $.ajax({
                     url: target,
                     type: 'POST',
-                    contentType: 'application/json; charset=UTF-8',
+                    contentType: 'application/json-rpc',
                     data: JSON.stringify({
                         version: '1.0',
                         method: method,
