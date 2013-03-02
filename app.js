@@ -139,7 +139,7 @@
                 $dialog.bind('pagehide', function() {
                     $dialog.unbind('pagehide');
                     $login.unbind('click');
-                    if (!deferred.isResolved()) {
+                    if (deferred.state() === 'pending') {
                         deferred.reject();
                     }
                 });
@@ -306,7 +306,7 @@
 
         initBugView: function($view) {
             var id = app.extractId($view),
-                $comments = $view.find('.comments-list');
+                $comments = $view.find('.comments-list').listview();
 
             $view
                 .find('h1')
@@ -673,7 +673,7 @@
                     }
                 });
             });
-            $(document).on('pageshow', '#newbug', function() {
+            $(document).on('pageinit', '#newbug', function() {
                 $('#new-product').val('');
                 $('#new-summary').val('');
                 $('#new-description').val('');
