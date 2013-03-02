@@ -638,7 +638,7 @@
             app.cache = new LocalStore(app.bz);
             
             /** Set up initializers for each page type */
-            $('#buglist').live('pageinit', function() {
+            $(document).on('pageinit', '#buglist', function() {
                 $('#buglist .bugsearch').bind('change keyup cut paste', function(event) {
                     app.updateBugList();
                 });
@@ -649,10 +649,10 @@
                     app.updateBugList();
                 });
             });
-            $('#buglist').live('pageshow', function() {
+            $(document).on('pageshow', '#buglist', function() {
                 app.updateBugList();
             });
-            $('#search-options').live('pageinit', function() {
+            $(document).on('pageinit', '#search-options', function() {
                 $('#adv-show-all').click(function() {
                     $('#adv-days-container').hide();
                 });
@@ -661,7 +661,7 @@
                 });
                 app.refreshProductSelection('#adv-product');
             });
-            $('#newbug').live('pageinit', function() {
+            $(document).on('pageinit', '#newbug', function() {
                 $('#new-product').change(function() {
                     var val = $(this).val();
                     if (val == '') {
@@ -673,7 +673,7 @@
                     }
                 });
             });
-            $('#newbug').live('pageshow', function() {
+            $(document).on('pageshow', '#newbug', function() {
                 $('#new-product').val('');
                 $('#new-summary').val('');
                 $('#new-description').val('');
@@ -682,13 +682,13 @@
                 $('#new-fields').hide();
                 app.refreshProductSelection('#new-product', 'Select product');
             });
-            $('.bug-page').live('pageinit', function() {
+            $(document).on('pageinit', '.bug-page', function() {
                 app.initBugView($(this));
             });
-            $('.details-page').live('pageinit', function() {
+            $(document).on('pageinit', '.details-page', function() {
                 app.initDetailView($(this));
             });
-            $('.deps-page').live('pageinit', function() {
+            $(document).on('pageinit', '.deps-page', function() {
                 app.initDepsView($(this));
             });
         
